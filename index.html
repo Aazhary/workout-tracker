@@ -102,6 +102,161 @@
           sets: (ex.presets||[{},{}]).map((pre)=> ex.type==="time" ? {duration:pre.duration||"", targetDuration:pre.target||"", done:false} : {weight:String(pre.w!=null?pre.w:ex.startWeight||""), unit:ex.unit||"kg", reps:String(pre.r!=null?pre.r:""), done:false})
         }));
 
+        function buildPrompt(session, history, profile) {
+          const p = profile || DEFAULT_PROFILE;
+          const prev = history.filter(h=>h.workout===session.workout).slice(-2)[0] || null;
+          const vol = calcVolume(session.exercises);
+          const mins = session.durationMins || "—";
+          const lines = [];
+          lines.push(`أنا أحمد، ${p.age} سنة، مستمر على الـ ${p.dose}.`);
+          lines.push("إليك التقرير البرمجي الصافي والمحدث لتمرينة اليوم، والمطلوب منك تحليله ومقارنته بالجلسة السابقة ومطابقته مع لقطات شاشة الساعة المرفقة:\n");
+          lines.push("1. [بيانات الجلسة الحالية]:");
+          lines.push("• اسم الجلسة: " + session.workout);
+          lines.push("• التاريخ: " + session.date);
+          lines.push("• الوقت الإجمالي للتمرين: " + mins + " دقيقة");
+          lines.push("• إجمالي الحجم التدريبي (Total Volume): " + (vol > 0 ? vol.toLocaleString() + " (mixed kg/lb)" : "—") + "\n");
+          lines.push("2. [سجل الأداء الفعلي للمجموعتين]:");
+          session.exercises.forEach(ex => {
+            if (ex.type === "reps") {
+              const s1 = ex.sets[0]; const s2 = ex.sets[1]||{};
+              const u1 = s1.unit||""; const u2 = s2.unit||u1;
+              lines.push("• " + ex.name + ":");
+              lines.push("  جولة 1: " + (s1.weight||"—") + u1 + " × " + (s1.reps||"—") + " عدات " + (s1.done?"✅":"⬜"));
+              lines.push("  جولة 2: " + (s2.weight||"—") + u2 + " × " + (s2.reps||"—") + " عدات " + (s2.done?"✅":"⬜"));
+            } else {
+              lines.push("• " + ex.name + ":");
+              ex.sets.forEach((s,i) => lines.push("  جولة " + (i+1) + ": " + (s.duration||"—") + " " + (s.done?"✅":"⬜")));
+            }
+          });
+          lines.push("\n3. [بيانات الاستشفاء والساعة]:");
+          lines.push("  (مرفق لقطات الشاشة للساعة بالأسفل لقراءتها وتحليل جودة النوم، الـ REM، نبضات التمرين، ومعدل التعافي).\n");
+          lines.push("بناءً على هذا، أعطني: تقييم الشدة، المقارنة الدقيقة، الأوزان المقترحة للجلسة القادمة بصيغة برمجة واضحة لتحديث الخطة.");
+          return lines.join("\n");
+        }
+
+        // ── SYNC FROM GEMINI SCREEN ──────────────────────────────────────────────────
+        function GeminiSyncScreen({onBack}) {
+            const [text, setText] = useState('');
+            const [status, setStatus] = useState('');
+            const handleSync = () => {
+                if(!text.trim()) return;
+                try {
+                    const currentWorkouts = {...getCustomWorkouts()};
+                    let updatedCount = 0;
+                    Object.keys(currentWorkouts).forEach(workoutKey => {
+                        currentWorkouts[workoutKey] = currentWorkouts[workoutKey].map(exercise => {
+                            const regex = new RegExp(`${exercise.name}\\s*:\\s*(?:جولة\\s*1:\\s*)?(\\d+(?:\\.\\d+)?)\\s*(kg|lb)?\\s*×\\s*(\\d+)`, 'i');
+                            const match = text.match(regex);
+                            if (match) {
+                                const newWeight = parseFloat(match[1]);
+                                const newReps = parseInt(match[3]);
+                                updatedCount++;
+                                return { ...exercise, startWeight: newWeight, presets: [{w: newWeight, r: newReps}, {w: newWeight, r: newReps}] };
+                            }
+                            return exercise;
+                        });
+                    });
+                    if(updatedCount > 0) {
+                        localStorage.setItem("wt_custom_workouts", JSON.stringify(currentWorkouts));
+                        setStatus(`✅ نجاح! تم تحديث ${updatedCount} تمرين بأوزانك الجديدة فوراً.`);
+                        setTimeout(onBack, 1500);
+                    } else {
+                        setStatus('❌ لم يتم العثور على أوزان متطابقة. تأكد من نسخ اقتراح جمني كاملاً.');
+                    }
+                } catch (e) { setStatus('❌ حدث خطأ أثناء قراءة البيانات.'); }
+            };
+            return (
+                <div class="min-h-screen text-right p-6" style={{background:"#0a0f1a"}}>
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-blue-500">🤖 مزامنة الأوزان من Gemini</h2>
+                        <button onClick={onBack} class="bg-gray-800 px-3 py-1.5 rounded-lg text-sm text-gray-400">إغلاق</button>
+                    </div>
+                    <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="اصق نص اقتراح الأوزان والتكرارات هنا..." class="w-full h-48 bg-gray-900 border border-gray-800 rounded-xl p-4 text-right text-sm text-white focus:outline-none focus:border-blue-500 mb-4 font-monospace" dir="rtl"></textarea>
+                    {status && <div class="p-3 bg-blue-950/40 border border-blue-900 rounded-xl text-center text-sm text-blue-400 mb-4">{status}</div>}
+                    <button onClick={handleSync} class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-bold text-white transition">تحديث خطة الأوزان بالموقع</button>
+                </div>
+            );
+        }
+
+        // ── SELECT SCREEN ─────────────────────────────────────────────────────────────
+        function SelectScreen({onSelect}){
+          const history=getStorage(); const p=getProfile()||DEFAULT_PROFILE;
+          const workouts = getCustomWorkouts();
+          return(
+            <div class="min-h-screen text-right" style={{background:"#0a0f1a"}}>
+              <style>{ANIM_STYLE}</style>
+              <div style={{background:"linear-gradient(135deg,#1e293b,#0f172a)",padding:"20px 16px 16px",borderBottom:"1px solid #1e293b"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
+                  <button onClick={()=>onSelect("__profile__")} style={{background:"#1e293b",border:"1px solid #334155",borderRadius:10,padding:"8px 12px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>⚙️ بياناتي</button>
+                  <div>
+                    <div style={{color:"#64748b",fontSize:11,letterSpacing:1}}>مرحباً</div>
+                    <div style={{color:"#f8fafc",fontWeight:800,fontSize:20}}>{p.name} 💪</div>
+                    <div style={{color:"#64748b",fontSize:12,marginTop:2}}>{TODAY_AR}</div>
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8}}>
+                  {[["جلسات",history.length,"#a855f7"],["الدهون",`${p.fat||21.4}%`,"#f97316"],["العضلات",`${p.muscle||61.6}kg`,"#22c55e"],["الوزن",`${p.weight||86.5}kg`,"#3b82f6"]].map(([l,v,c])=>(
+                    <div key={l} style={{background:"#0f172a",borderRadius:10,padding:"8px 6px",textAlign:"center"}}>
+                      <div style={{color:"#475569",fontSize:9,marginBottom:3}}>{l}</div>
+                      <div style={{color:c,fontWeight:700,fontSize:13}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{padding:"20px 16px"}}>
+                <div class="flex justify-between items-center mb-3">
+                    <button onClick={()=>onSelect("__sync__")} class="bg-blue-600/10 border border-blue-500/20 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">🤖 تحديث الخطة من Gemini</button>
+                    <div style={{color:"#475569",fontSize:12,letterSpacing:1}}>اختر تدريب اليوم</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                  {Object.keys(workouts).map(name=>{
+                    const c=C[name]; const sessions=history.filter(h=>h.workout===name); const lastW=sessions.length>0?sessions[sessions.length-1].date:null;
+                    return(
+                      <button key={name} onClick={()=>onSelect(name)}
+                        style={{background:c.bg,border:`1.5px solid ${c.accent}33`,borderRadius:18,padding:"20px 14px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:8,transition:"all 0.15s",boxShadow:"0 4px 20px rgba(0,0,0,0.4)"}}>
+                        <span style={{fontSize:28}}>{c.emoji}</span>
+                        <span style={{color:"#f8fafc",fontWeight:700,fontSize:14}}>{name}</span>
+                        <span style={{color:c.accent,fontSize:10}}>{sessions.length>0?`آخر مرة: ${lastW}`:`${workouts[name].length} تمارين`}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button onClick={()=>onSelect("__history__")} style={{width:"100%",marginTop:14,background:"transparent",border:"1px solid #1e293b",borderRadius:12,padding:"12px",color:"#64748b",cursor:"pointer",fontSize:13,fontWeight:600}}>📊 السجل والتحليل</button>
+              </div>
+            </div>
+          );
+        }
+
+        // ── PROFILE SCREEN ────────────────────────────────────────────────────────────
+        function ProfileScreen({onBack}){
+          const saved=getProfile()||DEFAULT_PROFILE;
+          const [form,setForm]=useState({weight:saved.weight,muscle:saved.muscle,fat:saved.fat,visceralFat:saved.visceralFat});
+          const [done,setDone]=useState(false);
+          const handleSave=()=>{ saveProfile({...DEFAULT_PROFILE,...form}); setDone(true); setTimeout(onBack,1200); };
+          return(
+            <div class="min-h-screen text-right" style={{background:"#0a0f1a"}}>
+              <div style={{background:"#1e293b",padding:"20px 16px",borderBottom:"1px solid #334155",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{color:"#f8fafc",fontWeight:800,fontSize:18}}>⚙️ بياناتي الجسمانية</div>
+                <button onClick={onBack} style={{background:"rgba(255,255,255,0.08)",border:"none",borderRadius:8,padding:"7px 11px",color:"#e2e8f0",cursor:"pointer",fontSize:15}}>→</button>
+              </div>
+              <div style={{padding:20}}>
+                <div style={{background:"#1e293b",borderRadius:16,padding:16,marginBottom:16,border:"1px solid #334155"}}>
+                  {[["weight","الوزن الكلي (kg)"],["muscle","الكتلة العضلية (kg)"],["fat","الدهون (%)"],["visceralFat","الدهون الحشوية (Visceral)"]].map(([k,l])=>(
+                    <div key={k} style={{marginBottom:14}}>
+                      <label style={{color:"#94a3b8",fontSize:12,display:"block",marginBottom:6}}>{l}</label>
+                      <input type="number" step="0.1" value={form[k]} onChange={e=>setForm(f=>({...f,[k]:parseFloat(e.target.value)}))}
+                        style={{width:"100%",background:"#0f172a",border:"1px solid #334155",borderRadius:10,padding:"12px 14px",color:"#f8fafc",fontSize:16,fontWeight:700,boxSizing:"border-box",outline:"none",textAlign:"right"}}/>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={handleSave} style={{width:"100%",background:done?"#22c55e":"#3b82f6",border:"none",borderRadius:12,padding:14,color:"#fff",cursor:"pointer",fontSize:15,fontWeight:700}}>
+                  {done?"✅ تم الحفظ!":"💾 حفظ البيانات"}
+                </button>
+              </div>
+            </div>
+          );
+        }
+
         // ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
         function WorkoutScreen({workoutName,onFinish,onBack}){
           const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
@@ -196,7 +351,7 @@
           const startRest = () => { initAudioContextForIOS(); lastTickRef.current = Date.now(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
           const update=(ei,si,field,val)=>setData(d=>d.map((ex,i)=>i!==ei?ex:{...ex,sets:ex.sets.map((s,j)=>j!==si?s:{...s,[field]:val})}));
           const toggleTimer=(ei,si)=>{ initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
-          const handleFinish=()=>{ releaseWakeLock(); const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
+          const handleFinish=()=>{ const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
 
           const progress=data.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
           const total=data.reduce((a,ex)=>a+ex.sets.length,0);
@@ -250,7 +405,7 @@
                   </div>
 
                   {showAnim && (
-                    <div style={{background:"#0f172a",borderRadius:12,padding:"8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center",alignment:"center",overflow:"hidden"}}>
+                    <div style={{background:"#0f172a",borderRadius:12,padding:"8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center",alignItems:"center",overflow:"hidden"}}>
                       {currentGifUrl ? (
                         <img src={currentGifUrl} alt={ex.name} class="w-28 h-24 object-contain rounded-lg" style={{mixBlendMode:"screen"}} />
                       ) : (
@@ -469,7 +624,7 @@
           if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__profile__") return <ProfileScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__sync__") return <GeminiSyncScreen onBack={()=>setScreen("select")}/>;
-          return <SelectScreen onSelect={name=>{if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
+          return <SelectScreen onSelect={name=>{if(name Pacman==="__history__")return setScreen("history");if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
