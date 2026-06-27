@@ -9,7 +9,6 @@
     <meta name="theme-color" content="#0a0f1a">
     <title>Workout Tracker — أحمد v1.1</title>
     
-    <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -72,7 +71,7 @@
           "Upper 2": [
             { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 صدر وسط", safety:"نزّل لحد ما الكوع 90 درجة لحماية القطنية", tips:["تحكم كامل في الوزن"], cue:"📏 بنش مستوي — صدر وسط" },
             { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"حافظ على انحناء بسيط في الكوع", tips:["ضم الصدر واعصره في المنتصف"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 ظهر وسط وRhomboids", safety:"صدرك ملصوق بالمسند طول الوقت", tips:["اسحب للحزام واعصر لوحين الكتف"], cue:"🏋️ سحب T — ظهر علوي" },
+            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 ظهر وسط وRhomboids", safety:"صدرك على المسند طول الوقت", tips:["اسحب للحزام واعصر لوحين الكتف"], cue:"🏋️ سحب T — ظهر علوي" },
             { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 ظهر وسط", safety:"صدرك ثابت على الدكة تماماً", tips:["المرفقين يتحركوا للخلف للخلف"], cue:"🔙 سحب بمسند — ظهر وسط" },
             { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"امنع المرجحة واستخدم الأكتاف فقط", tips:["الكوع يسبق اليد دايماً"], cue:"↔️ جانبي — عرض الكتف" },
             { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 كتف خلفي", safety:"التركيز على العضلة الخلفية وليس سحب الظهر", tips:["انحن للأمام قليلاً"], cue:"🔀 كتف خلفي" },
@@ -103,7 +102,7 @@
           sets: (ex.presets||[{},{}]).map((pre)=> ex.type==="time" ? {duration:pre.duration||"", targetDuration:pre.target||"", done:false} : {weight:String(pre.w!=null?pre.w:ex.startWeight||""), unit:ex.unit||"kg", reps:String(pre.r!=null?pre.r:""), done:false})
         }));
 
-        // ── WORKOUT SCREEN (v1.1: Wake Lock + Real-Time Timestamp Back Sync Embedded) ──
+        // ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
         function WorkoutScreen({workoutName,onFinish,onBack}){
           const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
           const [activeEx,setActiveEx]=useState(0); const startTime = useRef(Date.now());
@@ -114,11 +113,9 @@
           const [rest, setRest] = useState({active:false, seconds:90});
           const restSecondsRef = useRef(90); const audioCtxRef = useRef(null);
           
-          // v1.1 PATCH: المراجع الزمنية الحقيقية لمنع تجمد المتصفح والخلفية
           const lastTickRef = useRef(Date.now());
           const wakeLockRef = useRef(null);
 
-          // ── 1. PATCH v1.1: SCREEN WAKE LOCK (إبقاء الشاشة مضيئة تلقائياً) ──────────────
           const requestWakeLock = async () => {
              try {
                if ('wakeLock' in navigator) {
@@ -138,7 +135,6 @@
              return () => releaseWakeLock();
           }, []);
 
-          // العداد النشط المحدث للجولات الفرعية
           useEffect(()=>{ let iv; if(timer.active) iv=setInterval(()=>setTimer(t=>({...t,seconds:t.seconds+1})),1000); return()=>clearInterval(iv); },[timer.active]);
 
           const initAudioContextForIOS = () => {
@@ -177,7 +173,6 @@
             } catch(e){}
           };
 
-          // ── 2. PATCH v1.1: REAL-TIME BACKGROUND REST SYNC (مزامنة الوقت الفعلي لحساب التجميد)
           useEffect(() => {
             if (!rest.active) return;
             lastTickRef.current = Date.now();
@@ -185,7 +180,6 @@
             
             const iv = setInterval(() => {
               const now = Date.now();
-              // حساب الفارق الزمني الفعلي بالثواني لمعالجة تجميد الخلفية تماماً
               const deltaSeconds = Math.round((now - lastTickRef.current) / 1000) || 1;
               lastTickRef.current = now;
               
@@ -208,7 +202,6 @@
           const total=data.reduce((a,ex)=>a+ex.sets.length,0);
           const pct=Math.round((progress/total)*100); const ex=data[activeEx];
           
-          // جلب رابط الـ GIF التوضيحي المفتوح المصدر أو الاحتفاظ بالأنيميشن كـ fallback
           const currentGifUrl = EXERCISE_GIFS[ex.name] || null;
 
           return(
@@ -256,13 +249,12 @@
                     </div>
                   </div>
 
-                  {/* ── 3. PATCH v1.1: DISPLAY OPEN-SOURCE TRAINING GIFs ──────────────────── */}
                   {showAnim && (
-                    <div style={{background:"#0f172a",borderRadius:12,padding:"8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center",overflow:"hidden"}}>
+                    <div style={{background:"#0f172a",borderRadius:12,padding:"8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center",alignment:"center",overflow:"hidden"}}>
                       {currentGifUrl ? (
                         <img src={currentGifUrl} alt={ex.name} class="w-28 h-24 object-contain rounded-lg" style={{mixBlendMode:"screen"}} />
                       ) : (
-                        <ExerciseAnim name={ex.name} accent={c.accent}/>
+                        <svg style={{width:110,height:100,display:"block",margin:"0 auto"}} viewBox="0 0 110 100"><circle cx="55" cy="35" r="9" fill={c.accent}/><line x1="55" y1="44" x2="55" y2="68" stroke={c.accent} strokeWidth="4"/></svg>
                       )}
                     </div>
                   )}
@@ -349,7 +341,7 @@
           const c=C[session.workout]; const [copied,setCopied]=useState(false); const profile=getProfile();
           const prompt=buildPrompt(session,history,profile); const vol=calcVolume(session.exercises);
           const prev=history.filter(h=>h.workout===session.workout).slice(-2)[0]||null;
-          const prevVol=prev?calcVolume(prev.exercises); const volDiff=prevVol!==null?vol-prevVol:null;
+          const prevVol=prev?calcVolume(prev.exercises):null; const volDiff=prevVol!==null?vol-prevVol:null;
           const doneSets=session.exercises.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
           const totalSets=session.exercises.reduce((a,ex)=>a+ex.sets.length,0);
 
@@ -373,7 +365,7 @@
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
                   <div style={{background:"#1e293b",borderRadius:12,padding:"12px 8px",textAlign:"center",border:"1px solid #334155"}}>
                     <div style={{color:"#475569",fontSize:10,marginBottom:4}}>المقارنة بالسابق</div>
-                    <div style={{color:volDiff>0?"#22c55e":volDiff<0?"#ef4444":"#64748b",fontWeight:800,fontSize:14}}>{volDiff!==null?`${volDiff!>=0?"+":""}${volDiff.toLocaleString()}`:"أول جلسة"}</div>
+                    <div style={{color:volDiff>0?"#22c55e":volDiff<0?"#ef4444":"#64748b",fontWeight:800,fontSize:14}}>{volDiff!==null?`${volDiff>=0?"+":""}${volDiff.toLocaleString()}`:"أول جلسة"}</div>
                   </div>
                   <div style={{background:"#1e293b",borderRadius:12,padding:"12px 8px",textAlign:"center",border:"1px solid #334155"}}>
                     <div style={{color:"#475569",fontSize:10,marginBottom:4}}>الحجم التدريبي</div>
@@ -469,7 +461,7 @@
           );
         }
 
-        // ── APPLICATION CORE CONFIG (v1.1 Cleared Syntax Error) ──────────────────────
+        // ── MAIN APPLICATION CONFIG ──────────────────────────────────────────────────
         function App(){
           const[screen,setScreen]=useState("select"); const[activeWorkout,setActiveWorkout]=useState(null); const[reportData,setReportData]=useState(null);
           if(screen === "workout") return <WorkoutScreen workoutName={activeWorkout} onBack={()=>setScreen("select")} onFinish={(s,h)=>{setReportData({session:s,history:h});setScreen("report");}}/>;
