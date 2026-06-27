@@ -9,6 +9,7 @@
     <meta name="theme-color" content="#0a0f1a">
     <title>Workout Tracker — أحمد v1.1</title>
     
+    <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -24,7 +25,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // ── 3. PATCH v1.1: OPEN SOURCE TRAINING GIFs MAP (روابط الـ GIFs المفتوحة والمجانية) ──
+        // ── PATCH v1.1: OPEN SOURCE TRAINING GIFs MAP ──
         const EXERCISE_GIFS = {
           "Incline Chest Press": "https://wger.de/media/exercise-images/91/Incline-bench-press-1.gif",
           "Flat Chest Press": "https://wger.de/media/exercise-images/192/Bench-press-1.gif",
@@ -472,7 +473,7 @@
                 {rest.active && (
                   <div style={{background:rest.seconds<=10?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=10?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
                     <div>
-                      <div style={{color:rest.seconds<=10?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
+                      <div style={{color:"#ef4444", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
                       <div style={{color:rest.seconds<=10?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
                     </div>
                     <button onClick={()=>{ initAudioContextForIOS(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
@@ -624,7 +625,7 @@
           if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__profile__") return <ProfileScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__sync__") return <GeminiSyncScreen onBack={()=>setScreen("select")}/>;
-          return <SelectScreen onSelect={name=>{if(name Pacman==="__history__")return setScreen("history");if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
+          return <SelectScreen onSelect={name=>{if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
