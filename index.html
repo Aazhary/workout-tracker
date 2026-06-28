@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <meta name="theme-color" content="#0a0f1a">
-    <title>Workout Tracker — أحمد Baseline</title>
+    <title>Workout Tracker — أحمد</title>
     
     <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -25,58 +25,153 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // ── EXERCISE ANIMATIONS (Stick Figures) ───────────────────────────────────────
+        // ── CSS ANIMATIONS ────────────────────────────────────────────────────────────
+        const ANIM_STYLE = `
+        @keyframes pressDown { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(18px) scaleY(0.92)} }
+        @keyframes pressUp   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+        @keyframes chinUp    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
+        @keyframes flyOpen   { 0%,100%{transform:rotate(-30deg)} 50%{transform:rotate(30deg)} }
+        @keyframes shoulderP { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+        @keyframes sideRaise { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(60deg)} }
+        @keyframes legPress  { 0%,100%{transform:rotate(40deg)} 50%{transform:rotate(80deg)} }
+        @keyframes legCurl   { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-60deg)} }
+        @keyframes triExt    { 0%,100%{transform:rotate(-90deg)} 50%{transform:rotate(0deg)} }
+        @keyframes bicCurl   { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-100deg)} }
+        @keyframes crunch    { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-20deg)} }
+        @keyframes plankHold { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        @keyframes rowPull   { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-16px)} }
+        @keyframes pushDown  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(16px)} }
+        @keyframes squat     { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(14px) scaleY(0.88)} }
+        @keyframes sidePlank { 0%,100%{opacity:1;transform:rotate(0deg)} 50%{opacity:0.6;transform:rotate(3deg)} }
+        @keyframes rearDelt  { 0%,100%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} }
+        `;
+
+        // ── EXERCISE ANIMATIONS ───────────────────────────────────────────────────────
         const ExerciseAnim = ({ name, accent }) => {
           const s = { width: 110, height: 100, display: "block", margin: "0 auto" };
           const body = accent || "#3b82f6"; const bar = "#94a3b8";
-          return (
+          const anims = {
+            "Incline Chest Press": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="10" y="68" width="90" height="8" rx="3" fill="#334155"/>
+                <rect x="15" y="28" width="80" height="5" rx="2" fill={bar}/>
+                <circle cx="15" cy="30" r="6" fill={bar}/><circle cx="95" cy="30" r="6" fill={bar}/>
+                <rect x="25" y="56" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
+                <circle cx="85" cy="58" r="8" fill={body}/>
+                <g style={{animation:"pressUp 1.8s ease-in-out infinite"}}>
+                  <line x1="35" y1="60" x2="25" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                  <line x1="25" y1="40" x2="22" y2="30" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                  <line x1="75" y1="60" x2="85" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                  <line x1="85" y1="40" x2="88" y2="30" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                </g>
+              </svg>
+            ),
+            "Flat Chest Press": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="10" y="62" width="90" height="8" rx="3" fill="#334155"/>
+                <rect x="15" y="28" width="80" height="5" rx="2" fill={bar}/>
+                <circle cx="15" cy="30" r="6" fill={bar}/><circle cx="95" cy="30" r="6" fill={bar}/>
+                <rect x="25" y="52" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
+                <circle cx="83" cy="54" r="8" fill={body}/>
+                <g style={{animation:"pressUp 1.8s ease-in-out infinite"}}>
+                  <line x1="38" y1="56" x2="25" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                  <line x1="72" y1="56" x2="85" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                </g>
+              </svg>
+            ),
+            "Assisted Chin-Up": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="20" y="8" width="70" height="6" rx="3" fill={bar}/>
+                <g style={{animation:"chinUp 2s ease-in-out infinite"}}>
+                  <circle cx="55" cy="35" r="9" fill={body}/>
+                  <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                </g>
+              </svg>
+            ),
+            "Chest Fly": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="10" y="58" width="90" height="8" rx="3" fill="#334155"/>
+                <rect x="25" y="48" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
+                <circle cx="83" cy="50" r="8" fill={body}/>
+                <g style={{animation:"flyOpen 2s ease-in-out infinite", transformOrigin:"55px 52px"}}>
+                  <line x1="38" y1="52" x2="18" y2="42" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                  <line x1="72" y1="52" x2="92" y2="42" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                </g>
+              </svg>
+            ),
+            "Leg Press": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="5" y="30" width="50" height="50" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1.5"/>
+                <circle cx="38" cy="48" r="8" fill={body}/>
+                <g style={{animation:"legPress 2s ease-in-out infinite", transformOrigin:"38px 68px"}}>
+                  <line x1="38" y1="68" x2="55" y2="78" stroke={body} strokeWidth="3.5" strokeLinecap="round"/>
+                </g>
+                <rect x="60" y="55" width="45" height="20" rx="4" fill="#334155"/>
+              </svg>
+            ),
+            "Hack Squat": (
+              <svg style={s} viewBox="0 0 110 100">
+                <rect x="20" y="15" width="70" height="70" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1.5"/>
+                <g style={{animation:"squat 2s ease-in-out infinite"}}>
+                  <circle cx="55" cy="34" r="9" fill={body}/>
+                  <line x1="55" y1="43" x2="55" y2="60" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+                </g>
+              </svg>
+            )
+          };
+          return anims[name] || (
             <svg style={s} viewBox="0 0 110 100">
               <circle cx="55" cy="35" r="9" fill={body}/>
-              <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4"/>
-              <text x="55" y="95" textAnchor="middle" fill="#64748b" fontSize="9">{name.slice(0,14)}</text>
+              <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4" strokeLinecap="round"/>
             </svg>
           );
         };
 
-        // ── PROFILE CONFIG ───────────────────────────────────────────────────────────
+        // ── PROFILE CONFIG (تحديث قراءة الـ InBody والجرعة) ──────────────────
         const DEFAULT_PROFILE = { name: "أحمد", weight: 86.5, muscle: 61.6, fat: 21.4, visceralFat: 12, age: 38, dose: "Mounjaro 5mg" };
 
         // ── WEEKLY INTENSE TWO-SET PLAN ────────────────────────────────────────────
         const DEFAULT_WORKOUTS = {
           "Upper 1": [
-            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 صدر علوي\n⚡ كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت", tips:["نزّل ببطء 3 ثواني، ارفع بقوة"], cue:"📐 صدر علوي" },
-            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 ظهر عريض + بايسبس", safety:"متأرجحش — الحركة من الكتف", tips:["اسحب لحد ما ذقنك فوق البار"], cue:"⬆️ ظهر وبايسبس" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"مرفقيك منحنيين دايماً لحماية الكوع", tips:["حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 كتف أمامي وجانبي", safety:"وزن مأمن لحماية مفصل الكتف", tips:["شد بطنك طول الوقت"], cue:"🔒 حماية مفصل الكتف" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"متحركش جسمك أو تأرجحه", tips:["ارفع للجانب مش للأمام"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 رئيسي: صدر علوي (Upper Pec)\n⚡ مساعد: كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت — لو ارتفع معناه الوزن تقيل", tips:["ضهرك ملصوق بالكرسي طول الوقت","نزّل ببطء 3 ثواني، ارفع بقوة","مرفقيك مش فارد 100% فوق","زاوية 30-45° — مش 90°"], cue:"📐 زاوية 45° — صدر علوي" },
+            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 رئيسي: ظهر عريض (Lats) + بايسبس\n⚡ مساعد: ظهر علوي + ساعد", safety:"متأرجحش — الحركة من الكتف مش من الوسط", tips:["الوزن المساعد أكتر = أسهل","اسحب لحد ما ذقنك فوق البار","نزّل ببطء — ده الجزء المهم"], cue:"⬆️ ظهر وبايسبس" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل (Pectoralis Major)", safety:"مرفقيك منحنيين دايماً — لو فردتهم كامل هتأذي كوعك", tips:["مرفقيك منحنيين بسيط طول الوقت","حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
+            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 رئيسي: كتف أمامي + كتف جانبي", safety:"وزن مأمن مهم جداً — مفصل الكتف بتاعك محتاج حماية", tips:["وزن مأمن لحماية مفصل الكتف","شد بطنك طول الوقت"], cue:"🔒 أكتاف — حماية المفصل أولى" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي (Lateral Delt)", safety:"متحركش جسمك — لو بتأرجح يبقى الوزن تقيل", tips:["ارفع للجانب مش للأمام","الكوع يسبق الرسغ قليلاً"], cue:"↔️ جانبي — عرض الكتف" },
           ],
           "Lower 1": [
-            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 كوادريسبس (أرجل أمامية)", safety:"متقفلش ركبتك 100% فوق حمايةً للمفصل", tips:["انزل لـ 90 درجة بس"], cue:"🦵 ضغط أرجل" },
-            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 هامسترينج (خلفيات)", safety:"متزنكش على الجهاز عشان تعزل العضلة", tips:["ببطء شديد في الرجوع"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين تماماً جنب راسك", tips:["افرد الذراع بالكامل للأعلى"], cue:"💪 تمديد ترايسبس" },
-            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 بايسبس", safety:"الضهر مستوي على الدكة المائلة", tips:["نزّل ببطء ومنع المرجحة"], cue:"💪 بايسبس — أقوى عزل" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي للكور)", safety:"الحركة من الأكتاف فقط — ممنوع التخطي", tips:["اعصر عضلات البطن ثانية فوق"], cue:"🎯 بطن علوي — إلزامي" },
-            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 كور كامل (إلزامي للثبات)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["شد بطنك لجوا وماترفعش مؤخرتك"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
+            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 رئيسي: كوادريسبس (Quads)\n⚡ مساعد: غلوت + هامسترينج", safety:"متقفلش ركبتك فوق — وخليها مش بتتعدى الصابع", tips:["رجليك متاعدين على العرض","انزل لـ 90 درجة بس","متقفلش ركبتك فوق"], cue:"🦵 ضغط أرجل — كوادريسبس" },
+            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 رئيسي: هامسترينج (Hamstrings)", safety:"متزنكش على الجهاز — ده بيشيل الحمل من العضلة", tips:["ببطء في الرجوع — ده الجزء المهم","متزنكش على الجهاز"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 رئيسي: ترايسبس (Triceps)", safety:"كوعيك ثابتين — لو تحركوا يبقى الوزن تقيل", tips:["افرد الدراع كاملة","نزّل ببطء"], cue:"💪 تمديد ترايسبس" },
+            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 رئيسي: بايسبس (Biceps)", safety:"متتحركش عن الدكة — المرجحة بتضيع التمرين", tips:["الضهر مستوي على الدكة المائلة","نزّل ببطء كامل"], cue:"💪 بايسبس — أقوى عزل" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن والكور)", safety:"الحركة من الأكتاف بس — لا تقم بتخطي هذا التمرين حتّى تعصر الكور", tips:["مش بترفع جسمك كله — بس الأكتاف","زفير وانت بتطلع"], cue:"🎯 بطن علوي — إلزامي" },
+            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 رئيسي: كور كامل (إلزامي للكور)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["جسمك خط مستقيم من راسك لكعبك","بطنك جوّا طول الوقت"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
           ],
           "Upper 2": [
-            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 صدر وسط", safety:"نزّل لحد ما الكوع 90 درجة لحماية القطنية", tips:["تحكم كامل في الوزن"], cue:"📏 بنش مستوي" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"حافظ على انحناء بسيط في الكوع", tips:["ضم الصدر واعصره في المنتصف"], cue:"🦋 فراشة" },
-            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 ظهر وسط وRhomboids", safety:"صدرك على المسند طول الوقت", tips:["اسحب للحزام واعصر لوحين الكتف"], cue:"🏋️ سحب T" },
-            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 ظهر وسط", safety:"صدرك ثابت على الدكة تماماً", tips:["المرفقين يتحركوا للخلف"], cue:"🔙 سحب بمسند" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"امنع المرجحة واستخدم الأكتاف فقط", tips:["الكوع يسبق اليد دايماً"], cue:"↔️ جانبي — عرض الكتف" },
-            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 كتف خلفي", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً"], cue:"🔀 كتف خلفي" },
+            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 رئيسي: صدر وسط (Pec Major)", safety:"نزّل لحد ما الكوع 90° بس — مش أكتر عشان القطنية", tips:["تحكم في المدى الحركي","ضهرك ملصوق بالكرسي"], cue:"📏 بنش مستوي — صدر وسط" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل", safety:"مرفقيك منحنيين دايماً", tips:["ركّز على الشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
+            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 رئيسي: ظهر وسط + Rhomboids", safety:"صدرك على المسند طول الوقت — لو ارتفع يبقى الوزن تقيل", tips:["صدرك على المسند طول الوقت","اسحب للحزام — مش للذقن"], cue:"🏋️ سحب T — ظهر علوي" },
+            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 رئيسي: ظهر وسط (Mid Back)", safety:"صدرك على الدكة مش بترفعه — ده بيحمي القطنية", tips:["مرفقيك بيجوا للخلف — مش للجانب"], cue:"🔙 سحب بمسند — ظهر وسط" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي", safety:"مش بتأرجح جسمك دايماً", tips:["الكوع فوق الرسغ دايماً"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 رئيسي: كتف خلفي (Rear Delt)", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً","نزّل ببطء"], cue:"🔀 كتف خلفي" },
           ],
           "Lower 2": [
-            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 كوادريسبس وغلوت", safety:"ظهرك ملصوق بالجهاز تماماً — لو انفصل وقف فوراً", tips:["انزل لزاوية 90 بالظبط"], cue:"🦵 هاك سكوات" },
-            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 هامسترينج خلفي", safety:"التحكم أهم من الوزن", tips:["اعصر ثانية في الأعلى"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين في الجنب تماماً", tips:["افرد للأسفل بالكامل واقفل العضلة"], cue:"⬇️ ترايسبس كابل" },
-            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 بايسبس وساعد", safety:"اعزل المرجحة لتفادي إجهاد الجهاز العصبي", tips:["انزل للآخر ببطء تام"], cue:"💪 بايسبس متناوب" },
-            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 كور جانبي (إلزامي)", safety:"الوسط مرفوع لأعلى دايماً — ممنوع التخطي", tips:["ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي)", safety:"حركة مركزة وقصيرة — ممنوع التخطي", tips:["زفير كامل وأنت بتعصر فوق"], cue:"🎯 بطن — إلزامي" },
+            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 رئيسي: كوادريسبس + غلوت", safety:"ظهرك ملصوق بالجهاز طول الوقت — لو انفصل وقف فوراً", tips:["ظهرك ملصوق بالجهاز طول الوقت","انزل لـ 90 درجة بالظبط"], cue:"🦵 هاك سكوات — كوادريسبس + غلوت" },
+            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 رئيسي: هامسترينج", safety:"التحكم أهم من الوزن", tips:["تحكم في الحركة للأسفل","شايل ثانية فوق"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 رئيسي: ترايسبس", safety:"كوعيك ثابتين جنب جسمك", tips:["افرد الدراع كاملة للأسفل"], cue:"⬇️ ترايسبس كابل" },
+            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 رئيسي: بايسبس", safety:"بدون مرجحة لتفادي إجهاد الجهاز العصبي", tips:["كل دراع لوحدها","نزّل ببطء كامل"], cue:"💪 بايسبس متناوب" },
+            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 رئيسي: كور جانبي (إلزامي للكور)", safety:"ورك مرفوع دايماً — ممنوع التخطي", tips:["جسمك خط مستقيم","ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن)", safety:"الحركة صغيرة ومركّزة لمنع التخطي وعصر العضلة", tips:["الحركة من الصدر لفوق بس","زفير وانت بتطلع"], cue:"🎯 بطن — إلزامي" },
           ],
         };
 
-        const C = { "Upper 1":{ bg:"#1e3a5f", accent:"#3b82f6", emoji:"💪" }, "Lower 1":{ bg:"#14532d", accent:"#22c55e", emoji:"🦵" }, "Upper 2":{ bg:"#3b0764", accent:"#a855f7", emoji:"🏋️" }, "Lower 2":{ bg:"#7c2d12", accent:"#f97316", emoji:"🔥" } };
+        const C = {
+          "Upper 1":{ bg:"#1e3a5f", accent:"#3b82f6", emoji:"💪" },
+          "Lower 1":{ bg:"#14532d", accent:"#22c55e", emoji:"🦵" },
+          "Upper 2":{ bg:"#3b0764", accent:"#a855f7", emoji:"🏋️" },
+          "Lower 2":{ bg:"#7c2d12", accent:"#f97316", emoji:"🔥" },
+        };
+
         const TODAY_ISO = new Date().toISOString().split("T")[0];
         const TODAY_AR  = new Date().toLocaleDateString("ar-EG",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
 
@@ -84,15 +179,32 @@
         const saveStorage = d  => { try{ localStorage.setItem("wt_ahmed_v4", JSON.stringify(d)); }catch{} };
         const getProfile  = () => { try{ return JSON.parse(localStorage.getItem("wt_profile")||"null"); }catch{ return null; } };
         const saveProfile = p  => { try{ localStorage.setItem("wt_profile", JSON.stringify(p)); }catch{} };
-        const calcVolume = exercises => exercises.reduce((t,ex) => ex.type!=="reps"?t:t+ex.sets.reduce((s,set)=>s+((parseFloat(set.weight)||0)*(parseInt(set.reps)||0)),0),0);
+        
+        const getCustomWorkouts = () => {
+            try {
+                const saved = localStorage.getItem("wt_custom_workouts");
+                return saved ? JSON.parse(saved) : DEFAULT_WORKOUTS;
+            } catch { return DEFAULT_WORKOUTS; }
+        };
+
+        const calcVolume = exercises => exercises.reduce((t,ex) => {
+          if(ex.type!=="reps") return t;
+          return t + ex.sets.reduce((s,set)=>s+((parseFloat(set.weight)||0)*(parseInt(set.reps)||0)),0);
+        },0);
 
         const initSets = exercises => exercises.map(ex=>({
-          name:ex.name, type:ex.type, unit:ex.unit, startWeight:ex.startWeight, cue:ex.cue, tips:ex.tips, muscles:ex.muscles, safety:ex.safety,
-          sets: (ex.presets||[{},{}]).map((pre)=> ex.type==="time" ? {duration:pre.duration||"", targetDuration:pre.target||"", done:false} : {weight:String(pre.w!=null?pre.w:ex.startWeight||""), unit:ex.unit||"kg", reps:String(pre.r!=null?pre.r:""), done:false})
+          name:ex.name, type:ex.type, unit:ex.unit, startWeight:ex.startWeight,
+          cue:ex.cue, tips:ex.tips, muscles:ex.muscles, safety:ex.safety, video:ex.video,
+          sets: (ex.presets||[{},{}]).map((pre)=>
+            ex.type==="time"
+              ? {duration:pre.duration||"", targetDuration:pre.target||"", done:false}
+              : {weight:String(pre.w!=null?pre.w:ex.startWeight||""), unit:ex.unit||"kg", reps:String(pre.r!=null?pre.r:""), done:false}
+          ),
         }));
 
         function buildPrompt(session, history, profile) {
           const p = profile || DEFAULT_PROFILE;
+          const prev = history.filter(h=>h.workout===session.workout).slice(-2)[0] || null;
           const vol = calcVolume(session.exercises);
           const mins = session.durationMins || "—";
           const lines = [];
@@ -116,47 +228,187 @@
               ex.sets.forEach((s,i) => lines.push("  جولة " + (i+1) + ": " + (s.duration||"—") + " " + (s.done?"✅":"⬜")));
             }
           });
-          lines.push("\n3. [بيانات الاستشفاء والساعة]:\n(مرفق لقطات الشاشة للساعة بالأسفل لقراءتها وتحليل جودة النوم، الـ REM، نبضات التمرين، ومعدل التعافي).\n");
-          lines.push("بناءً على هذا، أعطني: تقييم الشدة، المقارنة الدقيقة، الأوزان المقترحة للجلسة القادمة.");
+          lines.push("\n3. [بيانات الاستشفاء والساعة]:");
+          lines.push("  (مرفق لقطات الشاشة للساعة بالأسفل لقراءتها وتحليل جودة النوم، الـ REM، نبضات التمرين، ومعدل التعافي).\n");
+          lines.push("بناءً على هذا، أعطني: تقييم الشدة، المقارنة الدقيقة، الأوزان المقترحة للجلسة القادمة بصيغة برمجة واضحة لتحديث الخطة.");
           return lines.join("\n");
         }
 
-        // ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
+        // ── SYNC FROM GEMINI SCREEN ──────────────────────────────────────────────────
+        function GeminiSyncScreen({onBack}) {
+            const [text, setText] = useState('');
+            const [status, setStatus] = useState('');
+            const handleSync = () => {
+                if(!text.trim()) return;
+                try {
+                    const currentWorkouts = {...getCustomWorkouts()};
+                    let updatedCount = 0;
+                    Object.keys(currentWorkouts).forEach(workoutKey => {
+                        currentWorkouts[workoutKey] = currentWorkouts[workoutKey].map(exercise => {
+                            const regex = new RegExp(`${exercise.name}\\s*:\\s*(?:جولة\\s*1:\\s*)?(\\d+(?:\\.\\d+)?)\\s*(kg|lb)?\\s*×\\s*(\\d+)`, 'i');
+                            const match = text.match(regex);
+                            if (match) {
+                                const newWeight = parseFloat(match[1]);
+                                const newReps = parseInt(match[3]);
+                                updatedCount++;
+                                return { ...exercise, startWeight: newWeight, presets: [{w: newWeight, r: newReps}, {w: newWeight, r: newReps}] };
+                            }
+                            return exercise;
+                        });
+                    });
+                    if(updatedCount > 0) {
+                        localStorage.setItem("wt_custom_workouts", JSON.stringify(currentWorkouts));
+                        setStatus(`✅ نجاح! تم تحديث ${updatedCount} تمرين بأوزانك الجديدة فوراً.`);
+                        setTimeout(onBack, 1500);
+                    } else {
+                        setStatus('❌ لم يتم العثور على أوزان متطابقة. تأكد من نسخ اقتراح جمني كاملاً.');
+                    }
+                } catch (e) { setStatus('❌ حدث خطأ أثناء قراءة البيانات.'); }
+            };
+            return (
+                <div class="min-h-screen text-right p-6" style={{background:"#0a0f1a"}}>
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
+                        <h2 class="text-xl font-bold text-blue-500">🤖 مزامنة الأوزان من Gemini</h2>
+                        <button onClick={onBack} class="bg-gray-800 px-3 py-1.5 rounded-lg text-sm text-gray-400">إغلاق</button>
+                    </div>
+                    <textarea value={text} onChange={e=>setText(e.target.value)} placeholder="اصق نص اقتراح الأوزان والتكرارات هنا..." class="w-full h-48 bg-gray-900 border border-gray-800 rounded-xl p-4 text-right text-sm text-white focus:outline-none focus:border-blue-500 mb-4 font-monospace" dir="rtl"></textarea>
+                    {status && <div class="p-3 bg-blue-950/40 border border-blue-900 rounded-xl text-center text-sm text-blue-400 mb-4">{status}</div>}
+                    <button onClick={handleSync} class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-bold text-white transition">تحديث خطة الأوزان بالموقع</button>
+                </div>
+            );
+        }
+
+        // ── SELECT SCREEN ─────────────────────────────────────────────────────────────
+        function SelectScreen({onSelect}){
+          const history=getStorage(); const p=getProfile()||DEFAULT_PROFILE;
+          const workouts = getCustomWorkouts();
+          return(
+            <div class="min-h-screen text-right" style={{background:"#0a0f1a"}}>
+              <style>{ANIM_STYLE}</style>
+              <div style={{background:"linear-gradient(135deg,#1e293b,#0f172a)",padding:"20px 16px 16px",borderBottom:"1px solid #1e293b"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
+                  <button onClick={()=>onSelect("__profile__")} style={{background:"#1e293b",border:"1px solid #334155",borderRadius:10,padding:"8px 12px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>⚙️ بياناتي</button>
+                  <div>
+                    <div style={{color:"#64748b",fontSize:11,letterSpacing:1}}>مرحباً</div>
+                    <div style={{color:"#f8fafc",fontWeight:800,fontSize:20}}>{p.name} 💪</div>
+                    <div style={{color:"#64748b",fontSize:12,marginTop:2}}>{TODAY_AR}</div>
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8}}>
+                  {[["جلسات",history.length,"#a855f7"],["الدهون",`${p.fat||21.4}%`,"#f97316"],["العضلات",`${p.muscle||61.6}kg`,"#22c55e"],["الوزن",`${p.weight||86.5}kg`,"#3b82f6"]].map(([l,v,c])=>(
+                    <div key={l} style={{background:"#0f172a",borderRadius:10,padding:"8px 6px",textAlign:"center"}}>
+                      <div style={{color:"#475569",fontSize:9,marginBottom:3}}>{l}</div>
+                      <div style={{color:c,fontWeight:700,fontSize:13}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{padding:"20px 16px"}}>
+                <div class="flex justify-between items-center mb-3">
+                    <button onClick={()=>onSelect("__sync__")} class="bg-blue-600/10 border border-blue-500/20 text-blue-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">🤖 تحديث الخطة من Gemini</button>
+                    <div style={{color:"#475569",fontSize:12,letterSpacing:1}}>اختر تدريب اليوم</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                  {Object.keys(workouts).map(name=>{
+                    const c=C[name]; const sessions=history.filter(h=>h.workout===name); const lastW=sessions.length>0?sessions[sessions.length-1].date:null;
+                    return(
+                      <button key={name} onClick={()=>onSelect(name)}
+                        style={{background:c.bg,border:`1.5px solid ${c.accent}33`,borderRadius:18,padding:"20px 14px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:8,transition:"all 0.15s",boxShadow:"0 4px 20px rgba(0,0,0,0.4)"}}>
+                        <span style={{fontSize:28}}>{c.emoji}</span>
+                        <span style={{color:"#f8fafc",fontWeight:700,fontSize:14}}>{name}</span>
+                        <span style={{color:c.accent,fontSize:10}}>{sessions.length>0?`آخر مرة: ${lastW}`:`${workouts[name].length} تمارين`}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <button onClick={()=>onSelect("__history__")} style={{width:"100%",marginTop:14,background:"transparent",border:"1px solid #1e293b",borderRadius:12,padding:"12px",color:"#64748b",cursor:"pointer",fontSize:13,fontWeight:600}}>📊 السجل والتحليل</button>
+              </div>
+            </div>
+          );
+        }
+
+        // ── PROFILE SCREEN ────────────────────────────────────────────────────────────
+        function ProfileScreen({onBack}){
+          const saved=getProfile()||DEFAULT_PROFILE;
+          const [form,setForm]=useState({weight:saved.weight,muscle:saved.muscle,fat:saved.fat,visceralFat:saved.visceralFat});
+          const [done,setDone]=useState(false);
+          const handleSave=()=>{ saveProfile({...DEFAULT_PROFILE,...form}); setDone(true); setTimeout(onBack,1200); };
+          return(
+            <div class="min-h-screen text-right" style={{background:"#0a0f1a"}}>
+              <div style={{background:"#1e293b",padding:"20px 16px",borderBottom:"1px solid #334155",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{color:"#f8fafc",fontWeight:800,fontSize:18}}>⚙️ بياناتي الجسمانية</div>
+                <button onClick={onBack} style={{background:"rgba(255,255,255,0.08)",border:"none",borderRadius:8,padding:"7px 11px",color:"#e2e8f0",cursor:"pointer",fontSize:15}}>→</button>
+              </div>
+              <div style={{padding:20}}>
+                <div style={{background:"#1e293b",borderRadius:16,padding:16,marginBottom:16,border:"1px solid #334155"}}>
+                  {[["weight","الوزن الكلي (kg)"],["muscle","الكتلة العضلية (kg)"],["fat","الدهون (%)"],["visceralFat","الدهون الحشوية (Visceral)"]].map(([k,l])=>(
+                    <div key={k} style={{marginBottom:14}}>
+                      <label style={{color:"#94a3b8",fontSize:12,display:"block",marginBottom:6}}>{l}</label>
+                      <input type="number" step="0.1" value={form[k]} onChange={e=>setForm(f=>({...f,[k]:parseFloat(e.target.value)}))}
+                        style={{width:"100%",background:"#0f172a",border:"1px solid #334155",borderRadius:10,padding:"12px 14px",color:"#f8fafc",fontSize:16,fontWeight:700,boxSizing:"border-box",outline:"none",textAlign:"right"}}/>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={handleSave} style={{width:"100%",background:done?"#22c55e":"#3b82f6",border:"none",borderRadius:12,padding:14,color:"#fff",cursor:"pointer",fontSize:15,fontWeight:700}}>
+                  {done?"✅ تم الحفظ!":"💾 حفظ البيانات"}
+                </button>
+              </div>
+            </div>
+          );
+        }
+
+        // ── WORKOUT SCREEN (استعادة بنية الـ Oscillator الأصلية لثبات العداد والأداء) ──
         function WorkoutScreen({workoutName,onFinish,onBack}){
-          const c=C[workoutName]; const [data,setData]=useState(()=>initSets(DEFAULT_WORKOUTS[workoutName]));
+          const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
           const [activeEx,setActiveEx]=useState(0); const startTime = useRef(Date.now());
           const [showTips, setShowTips] = useState(false); const [showAnim, setShowAnim] = useState(true);
           const [timer, setTimer] = useState({active:false,seconds:0,exIdx:null,setIdx:null});
-          
-          const [rest, setRest] = useState({active:false, seconds:90});
-          const restSecondsRef = useRef(90); const audioCtxRef = useRef(null);
+          const [audioActivated, setAudioActivated] = useState(false);
+          const audioCtxRef = useRef(null);
 
           useEffect(()=>{ let iv; if(timer.active) iv=setInterval(()=>setTimer(t=>({...t,seconds:t.seconds+1})),1000); return()=>clearInterval(iv); },[timer.active]);
 
-          const initAudioContext = () => {
-            if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
-              audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtxRef.current.state === "suspended") audioCtxRef.current.resume();
+          const [rest, setRest] = useState({active:false, seconds:90});
+          const restSecondsRef = useRef(90);
+
+          const initAudioContextForIOS = () => {
+            try {
+              if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
+                audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+              }
+              if (audioCtxRef.current.state === "suspended") audioCtxRef.current.resume();
+              setAudioActivated(true);
+            } catch (e) { console.log(e); }
+          };
+
+          const testBeepHandshake = () => {
+             initAudioContextForIOS();
+             setTimeout(() => playBeep(600, 0.1, 0.3), 50);
           };
 
           const playBeep = (freq, dur, vol) => {
             try {
-              initAudioContext(); const ctx = audioCtxRef.current;
+              if (!audioCtxRef.current) return;
+              const ctx = audioCtxRef.current;
+              if (ctx.state === "suspended") ctx.resume();
               const osc = ctx.createOscillator(); const gain = ctx.createGain();
               osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = freq || 880;
-              gain.gain.setValueAtTime(vol || 0.5, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (dur || 0.18));
+              gain.gain.setValueAtTime(vol || 0.5, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (dur || 0.18));
               osc.start(ctx.currentTime); osc.stop(ctx.currentTime + (dur || 0.18));
             } catch(e){}
           };
 
           const playDone = () => {
             try {
-              initAudioContext(); const ctx = audioCtxRef.current;
+              if (!audioCtxRef.current) return;
+              const ctx = audioCtxRef.current;
+              if (ctx.state === "suspended") ctx.resume();
               [[0, 880], [0.2, 1047], [0.4, 1319]].forEach(([t, freq]) => {
                 const osc = ctx.createOscillator(); const gain = ctx.createGain();
                 osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.6, ctx.currentTime + t); gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.4);
+                gain.gain.setValueAtTime(0.6, ctx.currentTime + t);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.4);
                 osc.start(ctx.currentTime + t); osc.stop(ctx.currentTime + t + 0.45);
               });
             } catch(e){}
@@ -174,9 +426,9 @@
             return () => clearInterval(iv);
           }, [rest.active]);
 
-          const startRest = () => { initAudioContext(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
+          const startRest = () => { initAudioContextForIOS(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
           const update=(ei,si,field,val)=>setData(d=>d.map((ex,i)=>i!==ei?ex:{...ex,sets:ex.sets.map((s,j)=>j!==si?s:{...s,[field]:val})}));
-          const toggleTimer=(ei,si)=>{ initAudioContext(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
+          const toggleTimer=(ei,si)=>{ initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
           const handleFinish=()=>{ const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
 
           const progress=data.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
@@ -185,6 +437,7 @@
 
           return(
             <div class="min-h-screen text-right pb-8" style={{background:"#0a0f1a"}}>
+              <style>{ANIM_STYLE}</style>
               <div style={{background:c.bg,padding:"16px 16px 14px",borderBottom:`2px solid ${c.accent}33`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
                   <div style={{textAlign:"left"}}>
@@ -197,13 +450,19 @@
                   </div>
                   <button onClick={onBack} style={{background:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,padding:"7px 11px",color:"#e2e8f0",cursor:"pointer",fontSize:15}}>→</button>
                 </div>
+                
+                <div class="mb-3">
+                   <button onClick={testBeepHandshake} class={`w-full p-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${audioActivated ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-amber-600 text-white border border-amber-500 animate-pulse'}`}>
+                      {audioActivated ? '🔊 إذن الصوت مفعل وجاهز' : '⚠️ اضغط هنا لتفعيل واختبار الصوت (هام)'}
+                   </button>
+                </div>
 
                 <div style={{background:"rgba(255,255,255,0.1)",borderRadius:99,height:4}}><div style={{background:c.accent,borderRadius:99,height:4,width:`${pct}%`,transition:"width 0.4s"}}/></div>
                 <div style={{display:"flex",gap:6,marginTop:10,overflowX:"auto",paddingBottom:2,flexDirection:"row-reverse"}}>
                   {data.map((ex,i)=>{ const done=ex.sets.every(s=>s.done); return(
-                    <button key={i} onClick={()=>{initAudioContext(); setActiveEx(i); setShowTips(false); setShowAnim(true);}}
+                    <button key={i} onClick={()=>{initAudioContextForIOS(); setActiveEx(i); setShowTips(false); setShowAnim(true);}}
                       style={{background:i===activeEx?c.accent:done?`${c.accent}22`:"rgba(255,255,255,0.07)",border:"none",borderRadius:20,padding:"5px 11px",color:i===activeEx?"#fff":done?c.accent:"#94a3b8",cursor:"pointer",fontSize:11,whiteSpace:"nowrap",fontWeight:600,flexShrink:0}}>
-                      {done?"✓ ":""}{ex.name.split(" ")[0]}
+                      {done?"✓ ":""}{ex.name}
                     </button>
                   );})}
                 </div>
@@ -217,13 +476,13 @@
                       <div style={{color:c.accent,fontSize:11,fontWeight:600}}>{ex.cue}</div>
                     </div>
                     <div style={{display:"flex",gap:6}}>
-                      <button onClick={()=>setShowAnim(!showAnim)} style={{background:showAnim?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showAnim?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>🎬</button>
-                      <button onClick={()=>setShowTips(!showTips)} style={{background:showTips?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showTips?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>💡</button>
+                      <button onClick={()=>{initAudioContextForIOS(); setShowAnim(!showAnim);}} style={{background:showAnim?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showAnim?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>🎬</button>
+                      <button onClick={()=>{initAudioContextForIOS(); setShowTips(!showTips);}} style={{background:showTips?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showTips?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>💡</button>
                     </div>
                   </div>
 
-                  {showAnim && (
-                    <div style={{background:"#0f172a",borderRadius:12,padding:"8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center"}}>
+                  {showAnim&&(
+                    <div style={{background:"#0f172a",borderRadius:12,padding:"12px 8px",marginBottom:12,border:`1px solid ${c.accent}22`,display:"flex",justifyContent:"center"}}>
                       <ExerciseAnim name={ex.name} accent={c.accent}/>
                     </div>
                   )}
@@ -245,7 +504,7 @@
                     <div key={si} style={{background:set.done?`${c.accent}11`:"#0f172a",borderRadius:12,padding:12,marginBottom:8,border:`1px solid ${set.done?c.accent+"44":"#1e293b"}`}}>
                       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexDirection:"row-reverse",marginBottom:8}}>
                         <span style={{color:set.done?c.accent:"#475569",fontWeight:700,fontSize:12}}>المجموعة {si+1}</span>
-                        <button onClick={()=>{ update(activeEx,si,"done",!set.done); if(!set.done) startRest(); else initAudioContext(); }}
+                        <button onClick={()=>{ update(activeEx,si,"done",!set.done); if(!set.done) startRest(); else initAudioContextForIOS(); }}
                           style={{background:set.done?c.accent:"transparent",border:`2px solid ${set.done?c.accent:"#334155"}`,borderRadius:99,width:26,height:26,cursor:"pointer",color:set.done?"#fff":"#64748b",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>
                           {set.done?"✓":"○"}
                         </button>
@@ -259,8 +518,7 @@
                           <div>
                             <div style={{color:"#475569",fontSize:9,marginBottom:4,textAlign:"center"}}>الوحدة</div>
                             <select value={set.unit} onChange={e=>update(activeEx,si,"unit",e.target.value)} style={{width:"100%",background:"#1e293b",border:"1px solid #334155",borderRadius:8,padding:"8px 4px",color:"#94a3b8",fontSize:12,fontWeight:600,textAlign:"center",outline:"none"}}>
-                              <option>kg</option>
-                              <option>lb</option>
+                              <option>kg</option><option>lb</option>
                             </select>
                           </div>
                           <div>
@@ -287,19 +545,19 @@
                 {rest.active && (
                   <div style={{background:rest.seconds<=10?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=10?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
                     <div>
-                      <div style={{color:"#ef4444", fontSize:11, fontWeight:700}}>⏳ وقت الراحة</div>
+                      <div style={{color:rest.seconds<=10?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة</div>
                       <div style={{color:rest.seconds<=10?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
                     </div>
-                    <button onClick={()=>{ initAudioContext(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
+                    <button onClick={()=>{ initAudioContextForIOS(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
                   </div>
                 )}
 
                 <div style={{display:"flex",gap:10}}>
                   {activeEx<data.length-1
-                    ?<button onClick={()=>{initAudioContext(); setActiveEx(activeEx+1); setShowTips(false); setShowAnim(true);}} style={{flex:1,background:c.accent,border:"none",borderRadius:12,padding:12,color:"#fff",fontWeight:700}}>التالي ←</button>
-                    :<button onClick={()=>{initAudioContext(); handleFinish();}} style={{flex:1,background:`linear-gradient(135deg,${c.accent},#22c55e)`,border:"none",borderRadius:12,padding:12,color:"#fff",fontWeight:700}}>🏁 إنهاء وتوليد التقرير</button>
+                    ?<button onClick={()=>{initAudioContextForIOS(); setActiveEx(activeEx+1); setShowTips(false); setShowAnim(true);}} style={{flex:1,background:c.accent,border:"none",borderRadius:12,padding:12,color:"#fff",fontWeight:700}}>التالي ←</button>
+                    :<button onClick={()=>{initAudioContextForIOS(); handleFinish();}} style={{flex:1,background:`linear-gradient(135deg,${c.accent},#22c55e)`,border:"none",borderRadius:12,padding:12,color:"#fff",fontWeight:700}}>🏁 إنهاء وتوليد التقرير</button>
                   }
-                  {activeEx>0&&<button onClick={()=>{initAudioContext(); setActiveEx(activeEx-1); setShowTips(false); setShowAnim(true);}} style={{flex:1,background:"#1e293b",border:"1px solid #334155",borderRadius:12,padding:12,color:"#94a3b8"}}>← السابق</button>}
+                  {activeEx>0&&<button onClick={()=>{initAudioContextForIOS(); setActiveEx(activeEx-1); setShowTips(false); setShowAnim(true);}} style={{flex:1,background:"#1e293b",border:"1px solid #334155",borderRadius:12,padding:12,color:"#94a3b8"}}>← السابق</button>}
                 </div>
               </div>
             </div>
@@ -317,10 +575,12 @@
 
           const copyAndGo=()=>{ 
             navigator.clipboard.writeText(prompt).then(() => {
-              setCopied(true); setTimeout(()=>setCopied(false),3000); window.open("https://gemini.google.com/", "_blank");
+              setCopied(true); setTimeout(()=>setCopied(false),3000);
+              window.open("https://gemini.google.com/", "_blank");
             }).catch(()=>{ 
               const ta=document.createElement("textarea"); ta.value=prompt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); 
-              setCopied(true); setTimeout(()=>setCopied(false),3000); window.open("https://gemini.google.com/", "_blank");
+              setCopied(true); setTimeout(()=>setCopied(false),3000);
+              window.open("https://gemini.google.com/", "_blank");
             }); 
           };
 
@@ -372,7 +632,7 @@
                     <span style={{fontSize:22}}>🤖</span>
                     <div>
                       <div style={{color:"#f8fafc",fontWeight:700,fontSize:14}}>ارتباط ذكي بـ Gemini</div>
-                      <div style={{color:"#475569",fontSize:11}}>الزرار هينسخ الـ Prompt ويفتحلك جمني تلقائياً في ثواني.</div>
+                      <div style={{color:"#475569",fontSize:11}}>تم ترك خانات الساعة بالكامل فارغة لتقوم بإرفاق الإسكرين شوت يدوياً مع الـ Prompt التلقائي منسوخاً.</div>
                     </div>
                   </div>
                   <button onClick={copyAndGo} style={{width:"100%",background:copied?"#22c55e":`linear-gradient(135deg,#3b82f6,${c.accent})`,border:"none",borderRadius:12,padding:"14px",color:"#fff",cursor:"pointer",fontSize:15,fontWeight:700}}>
@@ -436,9 +696,10 @@
           const[screen,setScreen]=useState("select"); const[activeWorkout,setActiveWorkout]=useState(null); const[reportData,setReportData]=useState(null);
           if(screen === "workout") return <WorkoutScreen workoutName={activeWorkout} onBack={()=>setScreen("select")} onFinish={(s,h)=>{setReportData({session:s,history:h});setScreen("report");}}/>;
           if(screen === "report") return <ReportScreen session={reportData.session} history={reportData.history} onHome={()=>setScreen("select")}/>;
-          if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select Barra");} onBack={()=>setScreen("select")}/>;
+          if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__profile__") return <ProfileScreen onBack={()=>setScreen("select")}/>;
-          return <SelectScreen onSelect={name=>{if(name Pacman==="__history__")return setScreen("history");if(name==="__history__")return setScreen("history");if(name Pacman==="__profile__")return setScreen("__profile__");if(name==="__profile__")return setScreen("__profile__");setActiveWorkout(name);setScreen("workout");}}/>;
+          if(screen === "__sync__") return <GeminiSyncScreen onBack={()=>setScreen("select")}/>;
+          return <SelectScreen onSelect={name=>{if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
