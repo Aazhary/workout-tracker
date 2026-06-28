@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <meta name="theme-color" content="#0a0f1a">
-    <title>Workout Tracker — أحمد</title>
+    <title>Workout Tracker — أحمد v1.1.1</title>
     
     <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -24,27 +24,6 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
-
-        // ── CSS ANIMATIONS ────────────────────────────────────────────────────────────
-        const ANIM_STYLE = `
-        @keyframes pressDown { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(18px) scaleY(0.92)} }
-        @keyframes pressUp   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
-        @keyframes chinUp    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
-        @keyframes flyOpen   { 0%,100%{transform:rotate(-30deg)} 50%{transform:rotate(30deg)} }
-        @keyframes shoulderP { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
-        @keyframes sideRaise { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(60deg)} }
-        @keyframes legPress  { 0%,100%{transform:rotate(40deg)} 50%{transform:rotate(80deg)} }
-        @keyframes legCurl   { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-60deg)} }
-        @keyframes triExt    { 0%,100%{transform:rotate(-90deg)} 50%{transform:rotate(0deg)} }
-        @keyframes bicCurl   { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-100deg)} }
-        @keyframes crunch    { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-20deg)} }
-        @keyframes plankHold { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        @keyframes rowPull   { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-16px)} }
-        @keyframes pushDown  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(16px)} }
-        @keyframes squat     { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(14px) scaleY(0.88)} }
-        @keyframes sidePlank { 0%,100%{opacity:1;transform:rotate(0deg)} 50%{opacity:0.6;transform:rotate(3deg)} }
-        @keyframes rearDelt  { 0%,100%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} }
-        `;
 
         // ── EXERCISE ANIMATIONS ───────────────────────────────────────────────────────
         const ExerciseAnim = ({ name, accent }) => {
@@ -127,7 +106,7 @@
           );
         };
 
-        // ── PROFILE CONFIG (تحديث قراءة الـ InBody والجرعة) ──────────────────
+        // ── PROFILE CONFIG ───────────────────────────────────────────────────────────
         const DEFAULT_PROFILE = { name: "أحمد", weight: 86.5, muscle: 61.6, fat: 21.4, visceralFat: 12, age: 38, dose: "Mounjaro 5mg" };
 
         // ── WEEKLY INTENSE TWO-SET PLAN ────────────────────────────────────────────
@@ -156,7 +135,7 @@
             { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 رئيسي: كتف خلفي (Rear Delt)", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً","نزّل ببطء"], cue:"🔀 كتف خلفي" },
           ],
           "Lower 2": [
-            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 رئيسي: كوادريسبس + غلوت", safety:"ظهرك ملصوق بالجهاز طول الوقت — لو انفصل وقف فوراً", tips:["ظهرك ملصوق بالجهاز طول الوقت","انزل لـ 90 درجة بالظبط"], cue:"🦵 هاك سكوات — كوادريسبس + غلوت" },
+            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 رئيسي: كوادريسبس + غلوت", safety:"ظهركملصوق بالجهاز طول الوقت — لو انفصل وقف فوراً", tips:["ظهرك ملصوق بالجهاز طول الوقت","انزل لـ 90 درجة بالظبط"], cue:"🦵 هاك سكوات — كوادريسبس + غلوت" },
             { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 رئيسي: هامسترينج", safety:"التحكم أهم من الوزن", tips:["تحكم في الحركة للأسفل","شايل ثانية فوق"], cue:"🔄 هامسترينج" },
             { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 رئيسي: ترايسبس", safety:"كوعيك ثابتين جنب جسمك", tips:["افرد الدراع كاملة للأسفل"], cue:"⬇️ ترايسبس كابل" },
             { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 رئيسي: بايسبس", safety:"بدون مرجحة لتفادي إجهاد الجهاز العصبي", tips:["كل دراع لوحدها","نزّل ببطء كامل"], cue:"💪 بايسبس متناوب" },
@@ -341,7 +320,7 @@
               </div>
               <div style={{padding:20}}>
                 <div style={{background:"#1e293b",borderRadius:16,padding:16,marginBottom:16,border:"1px solid #334155"}}>
-                  {[["weight","الوزن الكلي (kg)"],["muscle","الكتلة العضلية (kg)"],["fat","الدهون (%)"],["visceralFat","الدهون الحشوية (Visceral)"]].map(([k,l])=>(
+                  {[["weight","الوزن الكلي (kg)"],["muscle","الكتلة العخراجية (kg)"],["fat","الدهون (%)"],["visceralFat","الدهون الحشوية (Visceral)"]].map(([k,l])=>(
                     <div key={k} style={{marginBottom:14}}>
                       <label style={{color:"#94a3b8",fontSize:12,display:"block",marginBottom:6}}>{l}</label>
                       <input type="number" step="0.1" value={form[k]} onChange={e=>setForm(f=>({...f,[k]:parseFloat(e.target.value)}))}
@@ -357,7 +336,7 @@
           );
         }
 
-        // ── WORKOUT SCREEN (استعادة بنية الـ Oscillator الأصلية لثبات العداد والأداء) ──
+        // ── WORKOUT SCREEN (MAPPED REAL-TIME REST BACKGROUND SYNC) ────────────────────
         function WorkoutScreen({workoutName,onFinish,onBack}){
           const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
           const [activeEx,setActiveEx]=useState(0); const startTime = useRef(Date.now());
@@ -365,6 +344,9 @@
           const [timer, setTimer] = useState({active:false,seconds:0,exIdx:null,setIdx:null});
           const [audioActivated, setAudioActivated] = useState(false);
           const audioCtxRef = useRef(null);
+
+          // مرجع زمني لمزامنة ساعة الموبايل الفعلية ومنع التجمد
+          const lastTickRef = useRef(Date.now());
 
           useEffect(()=>{ let iv; if(timer.active) iv=setInterval(()=>setTimer(t=>({...t,seconds:t.seconds+1})),1000); return()=>clearInterval(iv); },[timer.active]);
 
@@ -414,11 +396,21 @@
             } catch(e){}
           };
 
+          // دالة الـ Rest المحدثة بحساب الفارق الزمني لساعة التليفون الحقيقية
           useEffect(() => {
             if (!rest.active) return;
+            lastTickRef.current = Date.now();
             restSecondsRef.current = rest.seconds;
+            
             const iv = setInterval(() => {
-              restSecondsRef.current -= 1; const next = restSecondsRef.current;
+              const now = Date.now();
+              // حساب كم ثانية مرت فعلياً لتفادي تجميد الخلفية
+              const deltaSeconds = Math.round((now - lastTickRef.current) / 1000) || 1;
+              lastTickRef.current = now;
+              
+              restSecondsRef.current -= deltaSeconds;
+              const next = restSecondsRef.current;
+              
               if (next <= 0) { clearInterval(iv); playDone(); setRest({active:false, seconds:90}); return; }
               if (next <= 10) playBeep(next <= 5 ? 1047 : 880, 0.15, 0.5);
               setRest(r => ({...r, seconds: next}));
@@ -426,7 +418,7 @@
             return () => clearInterval(iv);
           }, [rest.active]);
 
-          const startRest = () => { initAudioContextForIOS(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
+          const startRest = () => { initAudioContextForIOS(); lastTickRef.current = Date.now(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
           const update=(ei,si,field,val)=>setData(d=>d.map((ex,i)=>i!==ei?ex:{...ex,sets:ex.sets.map((s,j)=>j!==si?s:{...s,[field]:val})}));
           const toggleTimer=(ei,si)=>{ initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
           const handleFinish=()=>{ const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
@@ -453,7 +445,7 @@
                 
                 <div class="mb-3">
                    <button onClick={testBeepHandshake} class={`w-full p-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${audioActivated ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-amber-600 text-white border border-amber-500 animate-pulse'}`}>
-                      {audioActivated ? '🔊 إذن الصوت مفعل وجاهز' : '⚠️ اضغط هنا لتفعيل واختبار الصوت (هام)'}
+                      {audioActivated ? '🔊 إذن الصوت الذكي مفعل وجاهز' : '⚠️ اضغط هنا لتفعيل واختبار الصوت (هام)'}
                    </button>
                 </div>
 
@@ -545,7 +537,7 @@
                 {rest.active && (
                   <div style={{background:rest.seconds<=10?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=10?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
                     <div>
-                      <div style={{color:rest.seconds<=10?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة</div>
+                      <div style={{color:rest.seconds<=10?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
                       <div style={{color:rest.seconds<=10?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
                     </div>
                     <button onClick={()=>{ initAudioContextForIOS(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
@@ -575,12 +567,10 @@
 
           const copyAndGo=()=>{ 
             navigator.clipboard.writeText(prompt).then(() => {
-              setCopied(true); setTimeout(()=>setCopied(false),3000);
-              window.open("https://gemini.google.com/", "_blank");
+              setCopied(true); setTimeout(()=>setCopied(false),3000); window.open("https://gemini.google.com/", "_blank");
             }).catch(()=>{ 
               const ta=document.createElement("textarea"); ta.value=prompt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); 
-              setCopied(true); setTimeout(()=>setCopied(false),3000);
-              window.open("https://gemini.google.com/", "_blank");
+              setCopied(true); setTimeout(()=>setCopied(false),3000); window.open("https://gemini.google.com/", "_blank");
             }); 
           };
 
@@ -595,7 +585,7 @@
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
                   <div style={{background:"#1e293b",borderRadius:12,padding:"12px 8px",textAlign:"center",border:"1px solid #334155"}}>
                     <div style={{color:"#475569",fontSize:10,marginBottom:4}}>المقارنة بالسابق</div>
-                    <div style={{color:volDiff>0?"#22c55e":volDiff<0?"#ef4444":"#64748b",fontWeight:800,fontSize:14}}>{volDiff!==null?`${volDiff>=0?"+":""}${volDiff.toLocaleString()}`:"أول جلسة"}</div>
+                    <div style={{color:volDiff>0?"#22c55e":volDiff<0?"#ef4444":"#64748b",fontWeight:800,fontSize:14}}>{volDiff!==null?`${volDiff >= 0 ? "+":""}${volDiff.toLocaleString()}`:"أول جلسة"}</div>
                   </div>
                   <div style={{background:"#1e293b",borderRadius:12,padding:"12px 8px",textAlign:"center",border:"1px solid #334155"}}>
                     <div style={{color:"#475569",fontSize:10,marginBottom:4}}>الحجم التدريبي</div>
@@ -699,7 +689,7 @@
           if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__profile__") return <ProfileScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__sync__") return <GeminiSyncScreen onBack={()=>setScreen("select")}/>;
-          return <SelectScreen onSelect={name=>{if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
+          return <SelectScreen onSelect={name=>{if(name Pacman==="__history__")return setScreen("history");if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
