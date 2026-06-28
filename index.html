@@ -7,9 +7,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <meta name="theme-color" content="#0a0f1a">
-    <title>Workout Tracker — أحمد v1.1.1</title>
+    <title>Workout Tracker — أحمد المستقر</title>
     
-    <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -25,83 +24,15 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // ── EXERCISE ANIMATIONS ───────────────────────────────────────────────────────
+        // ── EXERCISE ANIMATIONS (Stick Figures) ───────────────────────────────────────
         const ExerciseAnim = ({ name, accent }) => {
           const s = { width: 110, height: 100, display: "block", margin: "0 auto" };
-          const body = accent || "#3b82f6"; const bar = "#94a3b8";
-          const anims = {
-            "Incline Chest Press": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="10" y="68" width="90" height="8" rx="3" fill="#334155"/>
-                <rect x="15" y="28" width="80" height="5" rx="2" fill={bar}/>
-                <circle cx="15" cy="30" r="6" fill={bar}/><circle cx="95" cy="30" r="6" fill={bar}/>
-                <rect x="25" y="56" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
-                <circle cx="85" cy="58" r="8" fill={body}/>
-                <g style={{animation:"pressUp 1.8s ease-in-out infinite"}}>
-                  <line x1="35" y1="60" x2="25" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="25" y1="40" x2="22" y2="30" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="75" y1="60" x2="85" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="85" y1="40" x2="88" y2="30" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                </g>
-              </svg>
-            ),
-            "Flat Chest Press": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="10" y="62" width="90" height="8" rx="3" fill="#334155"/>
-                <rect x="15" y="28" width="80" height="5" rx="2" fill={bar}/>
-                <circle cx="15" cy="30" r="6" fill={bar}/><circle cx="95" cy="30" r="6" fill={bar}/>
-                <rect x="25" y="52" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
-                <circle cx="83" cy="54" r="8" fill={body}/>
-                <g style={{animation:"pressUp 1.8s ease-in-out infinite"}}>
-                  <line x1="38" y1="56" x2="25" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="72" y1="56" x2="85" y2="40" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                </g>
-              </svg>
-            ),
-            "Assisted Chin-Up": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="20" y="8" width="70" height="6" rx="3" fill={bar}/>
-                <g style={{animation:"chinUp 2s ease-in-out infinite"}}>
-                  <circle cx="55" cy="35" r="9" fill={body}/>
-                  <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                </g>
-              </svg>
-            ),
-            "Chest Fly": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="10" y="58" width="90" height="8" rx="3" fill="#334155"/>
-                <rect x="25" y="48" width="60" height="12" rx="6" fill={body} opacity="0.3"/>
-                <circle cx="83" cy="50" r="8" fill={body}/>
-                <g style={{animation:"flyOpen 2s ease-in-out infinite", transformOrigin:"55px 52px"}}>
-                  <line x1="38" y1="52" x2="18" y2="42" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="72" y1="52" x2="92" y2="42" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                </g>
-              </svg>
-            ),
-            "Leg Press": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="5" y="30" width="50" height="50" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1.5"/>
-                <circle cx="38" cy="48" r="8" fill={body}/>
-                <g style={{animation:"legPress 2s ease-in-out infinite", transformOrigin:"38px 68px"}}>
-                  <line x1="38" y1="68" x2="55" y2="78" stroke={body} strokeWidth="3.5" strokeLinecap="round"/>
-                </g>
-                <rect x="60" y="55" width="45" height="20" rx="4" fill="#334155"/>
-              </svg>
-            ),
-            "Hack Squat": (
-              <svg style={s} viewBox="0 0 110 100">
-                <rect x="20" y="15" width="70" height="70" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1.5"/>
-                <g style={{animation:"squat 2s ease-in-out infinite"}}>
-                  <circle cx="55" cy="34" r="9" fill={body}/>
-                  <line x1="55" y1="43" x2="55" y2="60" stroke={body} strokeWidth="4" strokeLinecap="round"/>
-                </g>
-              </svg>
-            )
-          };
-          return anims[name] || (
+          const body = accent || "#3b82f6";
+          return (
             <svg style={s} viewBox="0 0 110 100">
               <circle cx="55" cy="35" r="9" fill={body}/>
-              <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4" strokeLinecap="round"/>
+              <line x1="55" y1="44" x2="55" y2="68" stroke={body} strokeWidth="4"/>
+              <text x="55" y="95" textAnchor="middle" fill="#64748b" fontSize="9">{name.slice(0,14)}</text>
             </svg>
           );
         };
@@ -112,35 +43,35 @@
         // ── WEEKLY INTENSE TWO-SET PLAN ────────────────────────────────────────────
         const DEFAULT_WORKOUTS = {
           "Upper 1": [
-            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 رئيسي: صدر علوي (Upper Pec)\n⚡ مساعد: كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت — لو ارتفع معناه الوزن تقيل", tips:["ضهرك ملصوق بالكرسي طول الوقت","نزّل ببطء 3 ثواني، ارفع بقوة","مرفقيك مش فارد 100% فوق","زاوية 30-45° — مش 90°"], cue:"📐 زاوية 45° — صدر علوي" },
-            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 رئيسي: ظهر عريض (Lats) + بايسبس\n⚡ مساعد: ظهر علوي + ساعد", safety:"متأرجحش — الحركة من الكتف مش من الوسط", tips:["الوزن المساعد أكتر = أسهل","اسحب لحد ما ذقنك فوق البار","نزّل ببطء — ده الجزء المهم"], cue:"⬆️ ظهر وبايسبس" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل (Pectoralis Major)", safety:"مرفقيك منحنيين دايماً — لو فردتهم كامل هتأذي كوعك", tips:["مرفقيك منحنيين بسيط طول الوقت","حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 رئيسي: كتف أمامي + كتف جانبي", safety:"وزن مأمن مهم جداً — مفصل الكتف بتاعك محتاج حماية", tips:["وزن مأمن لحماية مفصل الكتف","شد بطنك طول الوقت"], cue:"🔒 أكتاف — حماية المفصل أولى" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي (Lateral Delt)", safety:"متحركش جسمك — لو بتأرجح يبقى الوزن تقيل", tips:["ارفع للجانب مش للأمام","الكوع يسبق الرسغ قليلاً"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 صدر علوي\n⚡ كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت", tips:["نزّل ببطء 3 ثواني، ارفع بقوة"], cue:"📐 صدر علوي" },
+            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 ظهر عريض + بايسبس", safety:"متأرجحش — الحركة من الكتف", tips:["اسحب لحد ما ذقنك فوق البار"], cue:"⬆️ ظهر وبايسبس" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"مرفقيك منحنيين دايماً لحماية الكوع", tips:["حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
+            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 كتف أمامي وجانبي", safety:"وزن مأمن لحماية مفصل الكتف", tips:["شد بطنك طول الوقت"], cue:"🔒 حماية مفصل الكتف" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"متحركش جسمك أو تأرجحه", tips:["ارفع للجانب مش للأمام"], cue:"↔️ جانبي — عرض الكتف" },
           ],
           "Lower 1": [
-            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 رئيسي: كوادريسبس (Quads)\n⚡ مساعد: غلوت + هامسترينج", safety:"متقفلش ركبتك فوق — وخليها مش بتتعدى الصابع", tips:["رجليك متاعدين على العرض","انزل لـ 90 درجة بس","متقفلش ركبتك فوق"], cue:"🦵 ضغط أرجل — كوادريسبس" },
-            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 رئيسي: هامسترينج (Hamstrings)", safety:"متزنكش على الجهاز — ده بيشيل الحمل من العضلة", tips:["ببطء في الرجوع — ده الجزء المهم","متزنكش على الجهاز"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 رئيسي: ترايسبس (Triceps)", safety:"كوعيك ثابتين — لو تحركوا يبقى الوزن تقيل", tips:["افرد الدراع كاملة","نزّل ببطء"], cue:"💪 تمديد ترايسبس" },
-            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 رئيسي: بايسبس (Biceps)", safety:"متتحركش عن الدكة — المرجحة بتضيع التمرين", tips:["الضهر مستوي على الدكة المائلة","نزّل ببطء كامل"], cue:"💪 بايسبس — أقوى عزل" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن والكور)", safety:"الحركة من الأكتاف بس — لا تقم بتخطي هذا التمرين حتّى تعصر الكور", tips:["مش بترفع جسمك كله — بس الأكتاف","زفير وانت بتطلع"], cue:"🎯 بطن علوي — إلزامي" },
-            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 رئيسي: كور كامل (إلزامي للكور)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["جسمك خط مستقيم من راسك لكعبك","بطنك جوّا طول الوقت"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
+            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 كوادريسبس (أرجل أمامية)", safety:"متقفلش ركبتك 100% فوق حمايةً للمفصل", tips:["انزل لـ 90 درجة بس"], cue:"🦵 ضغط أرجل" },
+            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 هامسترينج (خلفيات)", safety:"متزنكش على الجهاز عشان تعزل العضلة", tips:["ببطء شديد في الرجوع"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين تماماً جنب راسك", tips:["افرد الذراع بالكامل للأعلى"], cue:"💪 تمديد ترايسبس" },
+            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 بايسبس", safety:"الضهر مستوي على الدكة المائلة", tips:["نزّل ببطء ومنع المرجحة"], cue:"💪 بايسبس — أقوى عزل" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي للكور)", safety:"الحركة من الأكتاف فقط — ممنوع التخطي", tips:["اعصر عضلات البطن ثانية فوق"], cue:"🎯 بطن علوي — إلزامي" },
+            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 كور كامل (إلزامي للثبات)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["شد بطنك لجوا وماترفعش مؤخرتك"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
           ],
           "Upper 2": [
-            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 رئيسي: صدر وسط (Pec Major)", safety:"نزّل لحد ما الكوع 90° بس — مش أكتر عشان القطنية", tips:["تحكم في المدى الحركي","ضهرك ملصوق بالكرسي"], cue:"📏 بنش مستوي — صدر وسط" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل", safety:"مرفقيك منحنيين دايماً", tips:["ركّز على الشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 رئيسي: ظهر وسط + Rhomboids", safety:"صدرك على المسند طول الوقت — لو ارتفع يبقى الوزن تقيل", tips:["صدرك على المسند طول الوقت","اسحب للحزام — مش للذقن"], cue:"🏋️ سحب T — ظهر علوي" },
-            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 رئيسي: ظهر وسط (Mid Back)", safety:"صدرك على الدكة مش بترفعه — ده بيحمي القطنية", tips:["مرفقيك بيجوا للخلف — مش للجانب"], cue:"🔙 سحب بمسند — ظهر وسط" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي", safety:"مش بتأرجح جسمك دايماً", tips:["الكوع فوق الرسغ دايماً"], cue:"↔️ جانبي — عرض الكتف" },
-            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 رئيسي: كتف خلفي (Rear Delt)", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً","نزّل ببطء"], cue:"🔀 كتف خلفي" },
+            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 صدر وسط", safety:"نزّل لحد ما الكوع 90 درجة لحماية القطنية", tips:["تحكم كامل في الوزن"], cue:"📏 بنش مستوي" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"حافظ على انحناء بسيط في الكوع", tips:["ضم الصدر واعصره في المنتصف"], cue:"🦋 فراشة" },
+            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 ظهر وسط وRhomboids", safety:"صدرك على المسند طول الوقت", tips:["اسحب للحزام واعصر لوحين الكتف"], cue:"🏋️ سحب T" },
+            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 ظهر وسط", safety:"صدرك ثابت على الدكة تماماً", tips:["المرفقين يتحركوا للخلف"], cue:"🔙 سحب بمسند" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"امنع المرجحة واستخدم الأكتاف فقط", tips:["الكوع يسبق اليد دايماً"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 كتف خلفي", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً"], cue:"🔀 كتف خلفي" },
           ],
           "Lower 2": [
-            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 رئيسي: كوادريسبس + غلوت", safety:"ظهركملصوق بالجهاز طول الوقت — لو انفصل وقف فوراً", tips:["ظهرك ملصوق بالجهاز طول الوقت","انزل لـ 90 درجة بالظبط"], cue:"🦵 هاك سكوات — كوادريسبس + غلوت" },
-            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 رئيسي: هامسترينج", safety:"التحكم أهم من الوزن", tips:["تحكم في الحركة للأسفل","شايل ثانية فوق"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 رئيسي: ترايسبس", safety:"كوعيك ثابتين جنب جسمك", tips:["افرد الدراع كاملة للأسفل"], cue:"⬇️ ترايسبس كابل" },
-            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 رئيسي: بايسبس", safety:"بدون مرجحة لتفادي إجهاد الجهاز العصبي", tips:["كل دراع لوحدها","نزّل ببطء كامل"], cue:"💪 بايسبس متناوب" },
-            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 رئيسي: كور جانبي (إلزامي للكور)", safety:"ورك مرفوع دايماً — ممنوع التخطي", tips:["جسمك خط مستقيم","ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن)", safety:"الحركة صغيرة ومركّزة لمنع التخطي وعصر العضلة", tips:["الحركة من الصدر لفوق بس","زفير وانت بتطلع"], cue:"🎯 بطن — إلزامي" },
+            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 كوادريسبس وغلوت", safety:"ظهرك ملصوق بالجهاز تماماً — لو انفصل وقف فوراً", tips:["انزل لزاوية 90 بالظبط"], cue:"🦵 هاك سكوات" },
+            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 هامسترينج خلفي", safety:"التحكم أهم من الوزن", tips:["اعصر ثانية في الأعلى"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين في الجنب تماماً", tips:["افرد للأسفل بالكامل واقفل العضلة"], cue:"⬇️ ترايسبس كابل" },
+            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 بايسبس وساعد", safety:"اعزل المرجحة لتفادي إجهاد الجهاز العصبي", tips:["انزل للآخر ببطء تام"], cue:"💪 بايسبس متناوب" },
+            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 كور جانبي (إلزامي)", safety:"الوسط مرفوع لأعلى دايماً — ممنوع التخطي", tips:["ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي)", safety:"حركة مركزة وقصيرة — ممنوع التخطي", tips:["زفير كامل وأنت بتعصر فوق"], cue:"🎯 بطن — إلزامي" },
           ],
         };
 
@@ -270,7 +201,7 @@
                   <div>
                     <div style={{color:"#64748b",fontSize:11,letterSpacing:1}}>مرحباً</div>
                     <div style={{color:"#f8fafc",fontWeight:800,fontSize:20}}>{p.name} 💪</div>
-                    <div style={{color:"#64748b",fontSize:12,marginTop:2}}>{TODAY_AR}</div>
+                    <div style={{color:"#64748b",fontSize:12,marginTop:2}}>{p.weight}kg</div>
                   </div>
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8}}>
@@ -336,7 +267,7 @@
           );
         }
 
-        // ── WORKOUT SCREEN (MAPPED REAL-TIME REST BACKGROUND SYNC) ────────────────────
+        // ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
         function WorkoutScreen({workoutName,onFinish,onBack}){
           const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
           const [activeEx,setActiveEx]=useState(0); const startTime = useRef(Date.now());
@@ -345,7 +276,6 @@
           const [audioActivated, setAudioActivated] = useState(false);
           const audioCtxRef = useRef(null);
 
-          // مرجع زمني لمزامنة ساعة الموبايل الفعلية ومنع التجمد
           const lastTickRef = useRef(Date.now());
 
           useEffect(()=>{ let iv; if(timer.active) iv=setInterval(()=>setTimer(t=>({...t,seconds:t.seconds+1})),1000); return()=>clearInterval(iv); },[timer.active]);
@@ -396,7 +326,6 @@
             } catch(e){}
           };
 
-          // دالة الـ Rest المحدثة بحساب الفارق الزمني لساعة التليفون الحقيقية
           useEffect(() => {
             if (!rest.active) return;
             lastTickRef.current = Date.now();
@@ -404,7 +333,6 @@
             
             const iv = setInterval(() => {
               const now = Date.now();
-              // حساب كم ثانية مرت فعلياً لتفادي تجميد الخلفية
               const deltaSeconds = Math.round((now - lastTickRef.current) / 1000) || 1;
               lastTickRef.current = now;
               
@@ -420,7 +348,10 @@
 
           const startRest = () => { initAudioContextForIOS(); lastTickRef.current = Date.now(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
           const update=(ei,si,field,val)=>setData(d=>d.map((ex,i)=>i!==ei?ex:{...ex,sets:ex.sets.map((s,j)=>j!==si?s:{...s,[field]:val})}));
+          
+          // ── FIX: REPLACED true:true WITH active:true (تصليح تشغيل عداد الجولات الفرعية)
           const toggleTimer=(ei,si)=>{ initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
+          
           const handleFinish=()=>{ const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
 
           const progress=data.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
@@ -468,8 +399,8 @@
                       <div style={{color:c.accent,fontSize:11,fontWeight:600}}>{ex.cue}</div>
                     </div>
                     <div style={{display:"flex",gap:6}}>
-                      <button onClick={()=>{initAudioContextForIOS(); setShowAnim(!showAnim);}} style={{background:showAnim?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showAnim?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>🎬</button>
-                      <button onClick={()=>{initAudioContextForIOS(); setShowTips(!showTips);}} style={{background:showTips?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:showTips?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>💡</button>
+                      <button onClick={()=>{initAudioContextForIOS(); setShowAnim(!showAnim);}} style={{background:showAnim?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:"showAnim"?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>🎬</button>
+                      <button onClick={()=>{initAudioContextForIOS(); setShowTips(!showTips);}} style={{background:showTips?c.accent:"rgba(255,255,255,0.07)",border:"none",borderRadius:8,padding:"6px 10px",color:"showTips"?"#fff":"#64748b",cursor:"pointer",fontSize:11}}>💡</button>
                     </div>
                   </div>
 
@@ -681,7 +612,7 @@
           );
         }
 
-        // ── MAIN APPLICATION CONFIG ──────────────────────────────────────────────────
+        // ── MAIN APPLICATION CONFIG (تمت إزالة كل الكلمات الدخيلة تماماً لضمان الاستقرار البنائي) ──
         function App(){
           const[screen,setScreen]=useState("select"); const[activeWorkout,setActiveWorkout]=useState(null); const[reportData,setReportData]=useState(null);
           if(screen === "workout") return <WorkoutScreen workoutName={activeWorkout} onBack={()=>setScreen("select")} onFinish={(s,h)=>{setReportData({session:s,history:h});setScreen("report");}}/>;
@@ -689,7 +620,7 @@
           if(screen === "history") return <HistoryScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__profile__") return <ProfileScreen onBack={()=>setScreen("select")}/>;
           if(screen === "__sync__") return <GeminiSyncScreen onBack={()=>setScreen("select")}/>;
-          return <SelectScreen onSelect={name=>{if(name Pacman==="__history__")return setScreen("history");if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
+          return <SelectScreen onSelect={name=>{if(name==="__history__")return setScreen("history");if(name==="__profile__")return setScreen("__profile__");if(name==="__sync__")return setScreen("__sync__");setActiveWorkout(name);setScreen("workout");}}/>;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
