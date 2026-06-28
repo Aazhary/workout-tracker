@@ -414,7 +414,9 @@
               
               if (next <= 0) { clearInterval(iv); setRest({active:false, seconds:90}); return; }
               
-              if (next <= 14) {
+              // ── 🎯 16 SECONDS UPDATED TIMING PATCH ──────────────────────────────
+              // تعديل توقيت التنبيه ليعمل تلقائياً عند الدخول في آخر 16 ثانية من وقت الراحة
+              if (next <= 16) {
                   playNativeAudioFile();
               }
               
@@ -543,10 +545,10 @@
                 </div>
 
                 {rest.active && (
-                  <div style={{background:rest.seconds<=14?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=14?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
+                  <div style={{background:rest.seconds<=16?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=16?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
                     <div>
-                      <div style={{color:rest.seconds<=14?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
-                      <div style={{color:rest.seconds<=14?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
+                      <div style={{color:rest.seconds<=16?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
+                      <div style={{color:rest.seconds<=16?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
                     </div>
                     <button onClick={()=>{ initAudioContextForIOS(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
                   </div>
@@ -636,27 +638,6 @@
                   <button onClick={copyAndGo} style={{width:"100%",background:copied?"#22c55e":`linear-gradient(135deg,#3b82f6,${c.accent})`,border:"none",borderRadius:12,padding:"14px",color:"#fff",cursor:"pointer",fontSize:15,fontWeight:700}}>
                     {copied?"🚀 تم النسخ وجاري فتح جمني...":"📋 نسخ الـ Prompt والذهاب لـ Gemini"}
                   </button>
-                </div>
-                <div style={{background:"#1e293b",borderRadius:16,padding:14,marginBottom:14,border:"1px solid #334155"}}>
-                  <div style={{color:"#475569",fontSize:11,fontWeight:700,marginBottom:10}}>ملخص الأداء الحالي</div>
-                  {session.exercises.map((ex,i)=>{
-                    const pe=prev?.exercises?.find(e=>e.name===ex.name);
-                    const cb=ex.type==="reps"?ex.sets.reduce((b,s)=>Math.max(b,parseFloat(s.weight)||0),0):null;
-                    const pb=pe?.type==="reps"?pe.sets.reduce((b,s)=>Math.max(b,parseFloat(s.weight)||0),0):null;
-                    const diff=cb&&pb?cb-pb:null; const unit=ex.sets[0]?.unit||"kg";
-                    return(
-                      <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"7px 0",borderBottom:i<session.exercises.length-1?"1px solid #0f172a":"none",flexDirection:"row-reverse"}}>
-                        <span style={{color:"#94a3b8",fontSize:12}}>{ex.name}</span>
-                        <div style={{display:"flex",gap:6,alignItems:"center",flexDirection:"row-reverse"}}>
-                          {ex.type==="reps"?(<>
-                            <span style={{color:"#475569",fontSize:11}}>{ex.sets.map(s=>s.reps||"?").join("/")} تكرار</span>
-                            <span style={{color:c.accent,fontWeight:700,fontSize:12}}>{cb>0?`${cb}${unit}`:"—"}</span>
-                            {diff!==null&&<span style={{color:diff>0?"#22c55e":diff<0?"#ef4444":"#64748b",fontSize:11,fontWeight:700}}>{diff>0?`↑${diff}`:diff<0?`↓${Math.abs(diff)}`:"="}</span>}
-                          </>):(<span style={{color:c.accent,fontSize:11}}>⏱ {ex.sets.map(s=>s.duration||"?").join(" / ")}</span>)}
-                        </div>
-                      </div>
-                    );
-                  })}
                 </div>
                 <button onClick={onHome} style={{width:"100%",background:"transparent",border:"1px solid #1e293b",borderRadius:12,padding:12,color:"#475569"}}>🏠 العودة للشاشة الرئيسية</button>
               </div>
