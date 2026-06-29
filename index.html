@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Workout">
     <meta name="theme-color" content="#0a0f1a">
-    <title>Workout Tracker — أحمد المستقر</title>
+    <title>Workout Tracker — أحمد v1.1.3</title>
     
     <!-- React, Babel & Tailwind CSS via CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -43,7 +43,7 @@
         @keyframes pushDown  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(16px)} }
         @keyframes squat     { 0%,100%{transform:translateY(0) scaleY(1)} 50%{transform:translateY(14px) scaleY(0.88)} }
         @keyframes sidePlank { 0%,100%{opacity:1;transform:rotate(0deg)} 50%{opacity:0.6;transform:rotate(3deg)} }
-        @keyframes rearDelt  { 0%,100%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} }
+        @keyframes permanent_delt  { 0%,100%{transform:rotate(20deg)} 50%{transform:rotate(-20deg)} }
         `;
 
         // ── EXERCISE ANIMATIONS ───────────────────────────────────────────────────────
@@ -104,7 +104,7 @@
                 <rect x="5" y="30" width="50" height="50" rx="5" fill="#1e293b" stroke="#334155" strokeWidth="1.5"/>
                 <circle cx="38" cy="48" r="8" fill={body}/>
                 <g style={{animation:"legPress 2s ease-in-out infinite", transformOrigin:"38px 68px"}}>
-                  <line x1="38" y1="68" x2="55" y2="78" stroke={body} strokeWidth="3.5" strokeLinecap="round"/>
+                  <line x1="38" y1="68" x2="55" y2="78" stroke={body" strokeWidth="3.5" strokeLinecap="round"/>
                 </g>
                 <rect x="60" y="55" width="45" height="20" rx="4" fill="#334155"/>
               </svg>
@@ -133,35 +133,35 @@
         // ── WEEKLY INTENSE TWO-SET PLAN ────────────────────────────────────────────
         const DEFAULT_WORKOUTS = {
           "Upper 1": [
-            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 رئيسي: صدر علوي (Upper Pec)\n⚡ مساعد: كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت — لو ارتفع معناه الوزن تقيل", tips:["ضهرك ملصوق بالكرسي طول الوقت","نزّل ببطء 3 ثواني، ارفع بقوة","مرفقيك مش فارد 100% فوق","زاوية 30-45° — مش 90°"], cue:"📐 زاوية 45° — صدر علوي" },
-            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 رئيسي: ظهر عريض (Lats) + بايسبس\n⚡ مساعد: ظهر علوي + ساعد", safety:"متأرجحش — الحركة من الكتف مش من الوسط", tips:["الوزن المساعد أكتر = أسهل","اسحب لحد ما ذقنك فوق البار","نزّل ببطء — ده الجزء المهم"], cue:"⬆️ ظهر وبايسبس" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل (Pectoralis Major)", safety:"مرفقيك منحنيين دايماً — لو فردتهم كامل هتأذي كوعك", tips:["مرفقيك منحنيين بسيط طول الوقت","حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 رئيسي: كتف أمامي + كتف جانبي", safety:"وزن مأمن مهم جداً — مفصل الكتف بتاعك محتاج حماية", tips:["وزن مأمن لحماية مفصل الكتف","شد بطنك طول الوقت"], cue:"🔒 أكتاف — حماية المفصل أولى" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي (Lateral Delt)", safety:"متحركش جسمك — لو بتأرجح يبقى الوزن تقيل", tips:["ارفع للجانب مش للأمام","الكوع يسبق الرسغ قليلاً"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Incline Chest Press", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:66,r:10}], muscles:"🎯 صدر علوي\n⚡ كتف أمامي + ترايسبس", safety:"ضهرك ملصوق بالكرسي طول الوقت", tips:["نزّل ببطء 3 ثواني، ارفع بقوة"], cue:"📐 صدر علوي" },
+            { name:"Assisted Chin-Up", type:"reps", unit:"lb", startWeight:40, presets:[{w:40,r:10},{w:40,r:10}], muscles:"🎯 ظهر عريض + بايسبس", safety:"متأرجحش — الحركة من الكتف", tips:["اسحب لحد ما ذقنك فوق البار"], cue:"⬆️ ظهر وبايسبس" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"مرفقيك منحنيين دايماً لحماية الكوع", tips:["حس بالشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
+            { name:"Shoulder Press", type:"reps", unit:"lb", startWeight:17.5, presets:[{w:17.5,r:12},{w:20,r:12}], muscles:"🎯 كتف أمامي وجانبي", safety:"وزن مأمن لحماية مفصل الكتف", tips:["شد بطنك طول الوقت"], cue:"🔒 حماية مفصل الكتف" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:10, presets:[{w:10,r:10},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"متحركش جسمك أو تأرجحه", tips:["ارفع للجانب مش للأمام"], cue:"↔️ جانبي — عرض الكتف" },
           ],
           "Lower 1": [
-            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 رئيسي: كوادريسبس (Quads)\n⚡ مساعد: غلوت + هامسترينج", safety:"متقفلش ركبتك فوق — وخليها مش بتتعدى الصابع", tips:["رجليك متاعدين على العرض","انزل لـ 90 درجة بس","متقفلش ركبتك فوق"], cue:"🦵 ضغط أرجل — كوادريسبس" },
-            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 رئيسي: هامسترينج (Hamstrings)", safety:"متزنكش على الجهاز — ده بيشيل الحمل من العضلة", tips:["ببطء في الرجوع — ده الجزء المهم","متزنكش على الجهاز"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 رئيسي: ترايسبس (Triceps)", safety:"كوعيك ثابتين — لو تحركوا يبقى الوزن تقيل", tips:["افرد الدراع كاملة","نزّل ببطء"], cue:"💪 تمديد ترايسبس" },
-            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 رئيسي: بايسبس (Biceps)", safety:"متتحركش عن الدكة — المرجحة بتضيع التمرين", tips:["الضهر مستوي على الدكة المائلة","نزّل ببطء كامل"], cue:"💪 بايسبس — أقوى عزل" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن والكور)", safety:"الحركة من الأكتاف بس — لا تقم بتخطي هذا التمرين حتّى تعصر الكور", tips:["مش بترفع جسمك كله — بس الأكتاف","زفير وانت بتطلع"], cue:"🎯 بطن علوي — إلزامي" },
-            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 رئيسي: كور كامل (إلزامي للكور)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["جسمك خط مستقيم من راسك لكعبك","بطنك جوّا طول الوقت"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
+            { name:"Leg Press", type:"reps", unit:"kg", startWeight:40, presets:[{w:40,r:12},{w:80,r:10}], muscles:"🎯 كوادريسبس (أرجل أمامية)", safety:"متقفلش ركبتك 100% فوق حمايةً للمفصل", tips:["انزل لـ 90 درجة بس"], cue:"🦵 ضغط أرجل" },
+            { name:"Seated Leg Curl", type:"reps", unit:"lb", startWeight:55, presets:[{w:55,r:12},{w:60,r:12}], muscles:"🎯 هامسترينج (خلفيات)", safety:"متزنكش على الجهاز عشان تعزل العضلة", tips:["ببطء شديد في الرجوع"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Press", type:"reps", unit:"lb", startWeight:10, presets:[{w:10,r:12},{w:12.5,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين تماماً جنب راسك", tips:["افرد الذراع بالكامل للأعلى"], cue:"💪 تمديد ترايسبس" },
+            { name:"Incline Biceps Curl", type:"reps", unit:"lb", startWeight:44, presets:[{w:44,r:12},{w:55,r:12}], muscles:"🎯 بايسبس", safety:"الضهر مستوي على الدكة المائلة", tips:["نزّل ببطء ومنع المرجحة"], cue:"💪 بايسبس — أقوى عزل" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:25, presets:[{w:25,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي للكور)", safety:"الحركة من الأكتاف فقط — ممنوع التخطي", tips:["اعصر عضلات البطن ثانية فوق"], cue:"🎯 بطن علوي — إلزامي" },
+            { name:"Plank", type:"time", unit:null, startWeight:null, presets:[{target:"40s"},{target:"40s"}], muscles:"🎯 كور كامل (إلزامي للثبات)", safety:"جسمك خط مستقيم تماماً — ممنوع التخطي", tips:["شد بطنك لجوا وماترفعش مؤخرتك"], cue:"⏱ ثبات 40 ثانية — إلزامي" },
           ],
           "Upper 2": [
-            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 رئيسي: صدر وسط (Pec Major)", safety:"نزّل لحد ما الكوع 90° بس — مش أكتر عشان القطنية", tips:["تحكم في المدى الحركي","ضهرك ملصوق بالكرسي"], cue:"📏 بنش مستوي — صدر وسط" },
-            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 رئيسي: صدر كامل", safety:"مرفقيك منحنيين دايماً", tips:["ركّز على الشد في منتصف الصدر"], cue:"🦋 فراشة — عزل الصدر" },
-            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 رئيسي: ظهر وسط + Rhomboids", safety:"صدرك على المسند طول الوقت — لو ارتفع يبقى الوزن تقيل", tips:["صدرك على المسند طول الوقت","اسحب للحزام — مش للذقن"], cue:"🏋️ سحب T — ظهر علوي" },
-            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 رئيسي: ظهر وسط (Mid Back)", safety:"صدرك على الدكة مش بترفعه — ده بيحمي القطنية", tips:["مرفقيك بيجوا للخلف — مش للجانب"], cue:"🔙 سحب بمسند — ظهر وسط" },
-            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 رئيسي: كتف جانبي", safety:"مش بتأرجح جسمك دايماً", tips:["الكوع فوق الرسغ دايماً"], cue:"↔️ جانبي — عرض الكتف" },
-            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 رئيسي: كتف خلفي (Rear Delt)", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً","نزّل ببطء"], cue:"🔀 كتف خلفي" },
+            { name:"Flat Chest Press", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:45,r:10}], muscles:"🎯 صدر وسط", safety:"نزّل لحد ما الكوع 90 درجة لحماية القطنية", tips:["تحكم كامل في الوزن"], cue:"📏 بنش مستوي" },
+            { name:"Chest Fly", type:"reps", unit:"lb", startWeight:99, presets:[{w:99,r:12},{w:110,r:12}], muscles:"🎯 صدر كامل", safety:"حافظ على انحناء بسيط في الكوع", tips:["ضم الصدر واعصره في المنتصف"], cue:"🦋 فراشة" },
+            { name:"T-Bar Row", type:"reps", unit:"kg", startWeight:15, presets:[{w:15,r:12},{w:30,r:10}], muscles:"🎯 ظهر وسط وRhomboids", safety:"صدرك على المسند طول الوقت", tips:["اسحب للحزام واعصر لوحين الكتف"], cue:"🏋️ سحب T" },
+            { name:"Chest Supported Row", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:12},{w:50,r:10}], muscles:"🎯 ظهر وسط", safety:"صدرك ثابت على الدكة تماماً", tips:["المرفقين يتحركوا للخلف"], cue:"🔙 سحب بمسند" },
+            { name:"Seated Side Raises", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:12}], muscles:"🎯 كتف جانبي", safety:"امنع المرجحة واستخدم الأكتاف فقط", tips:["الكوع يسبق اليد دايماً"], cue:"↔️ جانبي — عرض الكتف" },
+            { name:"Cable Rear Delt Fly", type:"reps", unit:"lb", startWeight:12, presets:[{w:12,r:12},{w:25,r:10}], muscles:"🎯 كتف خلفي", safety:"الوزن مش مهم هنا — الاستشعار بالعضلة هو الهدف", tips:["انحن للأمام قليلاً"], cue:"🔀 كتف خلفي" },
           ],
           "Lower 2": [
-            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 رئيسي: كوادريسبس + غلوت", safety:"ظهرك ملصوق بالجهاز طول الوقت — لو انفصل وقف فوراً", tips:["ظهرك ملصوق بالجهاز طول الوقت","انزل لـ 90 درجة بالظبط"], cue:"🦵 هاك سكوات — كوادريسبس + غلوت" },
-            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 رئيسي: هامسترينج", safety:"التحكم أهم من الوزن", tips:["تحكم في الحركة للأسفل","شايل ثانية فوق"], cue:"🔄 هامسترينج" },
-            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 رئيسي: ترايسبس", safety:"كوعيك ثابتين جنب جسمك", tips:["افرد الدراع كاملة للأسفل"], cue:"⬇️ ترايسبس كابل" },
-            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 رئيسي: بايسبس", safety:"بدون مرجحة لتفادي إجهاد الجهاز العصبي", tips:["كل دراع لوحدها","نزّل ببطء كامل"], cue:"💪 بايسبس متناوب" },
-            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 رئيسي: كور جانبي (إلزامي للكور)", safety:"ورك مرفوع دايماً — ممنوع التخطي", tips:["جسمك خط مستقيم","ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
-            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 رئيسي: بطن علوي (إلزامي للبطن)", safety:"الحركة صغيرة ومركّزة لمنع التخطي وعصر العضلة", tips:["الحركة من الصدر لفوق بس","زفير وانت بتطلع"], cue:"🎯 بطن — إلزامي" },
+            { name:"Hack Squat", type:"reps", unit:"kg", startWeight:30, presets:[{w:30,r:12},{w:70,r:10}], muscles:"🎯 كوادريسبس وغلوت", safety:"ظهرك ملصوق بالجهاز تماماً — لو انفصل وقف فوراً", tips:["انزل لزاوية 90 بالظبط"], cue:"🦵 هاك سكوات" },
+            { name:"Leg Curl", type:"reps", unit:"lb", startWeight:65, presets:[{w:65,r:12},{w:65,r:12}], muscles:"🎯 هامسترينج خلفي", safety:"التحكم أهم من الوزن", tips:["اعصر ثانية في الأعلى"], cue:"🔄 هامسترينج" },
+            { name:"Triceps Pushdown", type:"reps", unit:"lb", startWeight:20, presets:[{w:20,r:12},{w:22,r:12}], muscles:"🎯 ترايسبس", safety:"كوعيك ثابتين في الجنب تماماً", tips:["افرد للأسفل بالكامل واقفل العضلة"], cue:"⬇️ ترايسبس كابل" },
+            { name:"Alternating Curl (Preacher)", type:"reps", unit:"kg", startWeight:7.5, presets:[{w:7.5,r:12},{w:10,r:10}], muscles:"🎯 بايسبس وساعد", safety:"اعزل المرجحة لتفادي إجهاد الجهاز العصبي", tips:["انزل للآخر ببطء تام"], cue:"💪 بايسبس متناوب" },
+            { name:"Side Plank", type:"time", unit:null, startWeight:null, presets:[{target:"50s"},{target:"50s"}], muscles:"🎯 كور جانبي (إلزامي)", safety:"الوسط مرفوع لأعلى دايماً — ممنوع التخطي", tips:["جسمك خط مستقيم","ثبات 50 ثانية لكل جنب"], cue:"⏱ ثبات 50 ثانية — إلزامي" },
+            { name:"Abs Crunch", type:"reps", unit:"lb", startWeight:35, presets:[{w:35,r:25},{w:35,r:25}], muscles:"🎯 بطن علوي (إلزامي)", safety:"حركة مركزة وقصيرة — ممنوع التخطي", tips:["زفير كامل وأنت بتعصر فوق"], cue:"🎯 بطن — إلزامي" },
           ],
         };
 
@@ -357,7 +357,7 @@
           );
         }
 
-        // ── WORKOUT SCREEN ────────────────────────────────────────────────────────────
+        // ── WORKOUT SCREEN (v1.1.3: Web Audio API + Real-Time Sync + Wake Lock Screen Active) ──
         function WorkoutScreen({workoutName,onFinish,onBack}){
           const c=C[workoutName]; const [data,setData]=useState(()=>initSets(getCustomWorkouts()[workoutName]));
           const [activeEx,setActiveEx]=useState(0); const startTime = useRef(Date.now());
@@ -365,40 +365,67 @@
           const [timer, setTimer] = useState({active:false,seconds:0,exIdx:null,setIdx:null});
           const [audioActivated, setAudioActivated] = useState(false);
           
-          const nativeAudioRef = useRef(null);
+          const audioCtxRef = useRef(null);
           const lastTickRef = useRef(Date.now());
+          const wakeLockRef = useRef(null);
 
           useEffect(()=>{ let iv; if(timer.active) iv=setInterval(()=>setTimer(t=>({...t,seconds:t.seconds+1})),1000); return()=>clearInterval(iv); },[timer.active]);
 
           const [rest, setRest] = useState({active:false, seconds:90});
           const restSecondsRef = useRef(90);
 
+          // ── 1. WAKE LOCK API (تنشيط إبقاء الشاشة مضيئة طوال مدة الحصة لمنع التجميد تماماً) ──
+          const requestWakeLock = async () => {
+             try {
+               if ('wakeLock' in navigator) {
+                 wakeLockRef.current = await navigator.wakeLock.request('screen');
+               }
+             } catch (err) {}
+          };
+
+          const releaseWakeLock = () => {
+             if (wakeLockRef.current) {
+               wakeLockRef.current.release().then(() => wakeLockRef.current = null);
+             }
+          };
+
+          useEffect(() => {
+             requestWakeLock();
+             return () => releaseWakeLock();
+          }, []);
+
+          // ── 2. WEB AUDIO API HANDSHAKE (الربط البرمجي لتوليد النغمات دون تداخل مع مشغلات الميديا) ──
           const initAudioContextForIOS = () => {
             try {
-              if (nativeAudioRef.current) {
-                 nativeAudioRef.current.muted = false;
-                 setAudioActivated(true);
+              if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
+                audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
               }
+              if (audioCtxRef.current.state === "suspended") audioCtxRef.current.resume();
+              setAudioActivated(true);
             } catch (e) { console.log(e); }
           };
 
           const testBeepHandshake = () => {
              initAudioContextForIOS();
-             if (nativeAudioRef.current) {
-                 nativeAudioRef.current.currentTime = 0;
-                 nativeAudioRef.current.play().then(() => {
-                     nativeAudioRef.current.pause();
-                 }).catch(() => {});
-             }
+             setTimeout(() => playOscillatorBeep(650, 0.12, 0.4), 50);
           };
 
-          const playNativeAudioFile = () => {
-             if (nativeAudioRef.current) {
-                 nativeAudioRef.current.currentTime = 0;
-                 nativeAudioRef.current.play().catch(() => {});
-             }
+          // توليد موجة صوتية تدمج برمجياً فوق تيك توك وتسبوتيفاي دون إيقافهم نهائياً
+          const playOscillatorBeep = (freq, dur, vol) => {
+            try {
+              if (!audioCtxRef.current) return;
+              const ctx = audioCtxRef.current;
+              if (ctx.state === "suspended") ctx.resume();
+              const osc = ctx.createOscillator(); const gain = ctx.createGain();
+              osc.connect(gain); gain.connect(ctx.destination); 
+              osc.frequency.value = freq || 800;
+              gain.gain.setValueAtTime(vol || 0.4, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (dur || 0.15));
+              osc.start(ctx.currentTime); osc.stop(ctx.currentTime + (dur || 0.15));
+            } catch(e){}
           };
 
+          // دالة الـ Rest المعدلة لحساب الفارق الزمني الحقيقي وبدء التنبيه المولد في آخر 20 ثانية
           useEffect(() => {
             if (!rest.active) return;
             lastTickRef.current = Date.now();
@@ -412,12 +439,19 @@
               restSecondsRef.current -= deltaSeconds;
               const next = restSecondsRef.current;
               
-              if (next <= 0) { clearInterval(iv); setRest({active:false, seconds:90}); return; }
+              if (next <= 0) { 
+                  clearInterval(iv); 
+                  // نغمة نهائية مميزة عند انتهاء الراحة بالكامل
+                  playOscillatorBeep(950, 0.4, 0.6);
+                  setRest({active:false, seconds:90}); 
+                  return; 
+              }
               
-              // ── 🎯 16 SECONDS UPDATED TIMING PATCH ──────────────────────────────
-              // تعديل توقيت التنبيه ليعمل تلقائياً عند الدخول في آخر 16 ثانية من وقت الراحة
-              if (next <= 16) {
-                  playNativeAudioFile();
+              // ── 🎯 20 SECONDS TIMING PATCH WITH OVERLAY WEB AUDIO ────────────────
+              // تشغيل البيب بذبذبة عزل واضحة في آخر 20 ثانية فوق تيك توك وسبوتيفاي
+              if (next <= 20) {
+                  // نبضات متقطعة كل ثانية لإنذار التحضير للجولة القادمة
+                  playOscillatorBeep(next <= 5 ? 1050 : 750, 0.15, 0.45);
               }
               
               setRest(r => ({...r, seconds: next}));
@@ -425,10 +459,10 @@
             return () => clearInterval(iv);
           }, [rest.active]);
 
-          const startRest = () => { if(!audioActivated) initAudioContextForIOS(); lastTickRef.current = Date.now(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
+          const startRest = () => { initAudioContextForIOS(); lastTickRef.current = Date.now(); restSecondsRef.current = 90; setRest({active:true, seconds:90}); };
           const update=(ei,si,field,val)=>setData(d=>d.map((ex,i)=>i!==ei?ex:{...ex,sets:ex.sets.map((s,j)=>j!==si?s:{...s,[field]:val})}));
-          const toggleTimer=(ei,si)=>{ if(!audioActivated) initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
-          const handleFinish=()=>{ const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
+          const toggleTimer=(ei,si)=>{ initAudioContextForIOS(); if(timer.active&&timer.exIdx===ei&&timer.setIdx===si){ update(ei,si,"duration",`${timer.seconds}s`); setTimer({active:false,seconds:0,exIdx:null,setIdx:null}); } else { setTimer({active:true,seconds:0,exIdx:ei,setIdx:si}); } };
+          const handleFinish=()=>{ releaseWakeLock(); const h=getStorage(); const mins=Math.round((Date.now()-startTime.current)/60000); const s={date:TODAY_ISO,workout:workoutName,exercises:data,durationMins:mins}; h.push(s); saveStorage(h); onFinish(s,h); };
 
           const progress=data.reduce((a,ex)=>a+ex.sets.filter(s=>s.done).length,0);
           const total=data.reduce((a,ex)=>a+ex.sets.length,0);
@@ -437,8 +471,6 @@
           return(
             <div class="min-h-screen text-right pb-8" style={{background:"#0a0f1a"}}>
               <style>{ANIM_STYLE}</style>
-              
-              <audio ref={nativeAudioRef} src="freesound_community-piep-33489.mp3" preload="auto" muted></audio>
 
               <div style={{background:c.bg,padding:"16px 16px 14px",borderBottom:`2px solid ${c.accent}33`}}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
@@ -450,12 +482,12 @@
                     <div style={{color:c.accent,fontSize:11,letterSpacing:1}}>{c.emoji} {TODAY_AR.split("،")[0]}</div>
                     <div style={{color:"#f8fafc",fontWeight:800,fontSize:18}}>{workoutName}</div>
                   </div>
-                  <button onClick={onBack} style={{background:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,padding:"7px 11px",color:"#e2e8f0",cursor:"pointer",fontSize:15}}>→</button>
+                  <button onClick={()=>{ releaseWakeLock(); onBack(); }} style={{background:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,padding:"7px 11px",color:"#e2e8f0",cursor:"pointer",fontSize:15}}>→</button>
                 </div>
                 
                 <div class="mb-3">
                    <button onClick={testBeepHandshake} class={`w-full p-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${audioActivated ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-amber-600 text-white border border-amber-500 animate-pulse'}`}>
-                      {audioActivated ? '🔊 إذن ملف freesound_community-piep-33489.mp3 مأمن في سفاري' : '⚠️ اضغط هنا لمرة واحدة لتمكين ونشاط الصوت المرفق على الـ iPhone (هام)'}
+                      {audioActivated ? '🔊 موجات الـ Web Audio نشطة وتتداخل مع الميديا الذكية' : '⚠️ اضغط هنا لتأمين واختبار موجة الصوت في سفاري (هام للآيفون)'}
                    </button>
                 </div>
 
@@ -545,10 +577,10 @@
                 </div>
 
                 {rest.active && (
-                  <div style={{background:rest.seconds<=16?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=16?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
+                  <div style={{background:rest.seconds<=20?"#450a0a":"#1e293b", borderRadius:16, padding:"14px 20px", marginBottom:12, border:"1px solid " + (rest.seconds<=20?"#dc2626":"#334155"), display:"flex", alignItems:"center", justifyContent:"space-between", flexDirection:"row-reverse"}}>
                     <div>
-                      <div style={{color:rest.seconds<=16?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
-                      <div style={{color:rest.seconds<=16?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
+                      <div style={{color:rest.seconds<=20?"#ef4444":"#64748b", fontSize:11, fontWeight:700}}>⏳ وقت الراحة الذكي</div>
+                      <div style={{color:rest.seconds<=20?"#ef4444":"#f8fafc", fontSize:32, fontWeight:800}}>{Math.floor(rest.seconds/60)}:{String(rest.seconds%60).padStart(2,"0")}</div>
                     </div>
                     <button onClick={()=>{ initAudioContextForIOS(); setRest({active:false,seconds:90}); }} style={{background:"#334155",border:"none",borderRadius:10,padding:"8px 14px",color:"#94a3b8",cursor:"pointer",fontSize:12}}>تخطي</button>
                   </div>
